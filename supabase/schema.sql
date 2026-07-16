@@ -13,7 +13,10 @@ create table if not exists public.workshop_registrations (
 
 alter table public.workshop_registrations enable row level security;
 
--- The website writes through a server action using the service role.
+-- The website writes through a route handler using the service role.
 -- No public read/write policies are intentionally created.
 create index if not exists workshop_registrations_created_at_idx
   on public.workshop_registrations (created_at desc);
+
+-- Make the new table immediately visible to the Supabase Data API.
+notify pgrst, 'reload schema';

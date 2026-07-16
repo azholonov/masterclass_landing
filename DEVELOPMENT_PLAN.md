@@ -24,4 +24,6 @@
 ## Phase 5 — Registration Transport
 - [x] Replace the Webpack-sensitive Server Action with a Route Handler.
 - [x] Keep Supabase credentials server-only.
+- [x] Add actionable handling for a missing Supabase table.
+- [ ] Apply the schema to the remote Supabase project.
 - [ ] Validate production build and client rendering.

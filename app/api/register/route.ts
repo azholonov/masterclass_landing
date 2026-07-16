@@ -51,6 +51,14 @@ export async function POST(request: Request) {
 
   if (error) {
     console.error("Supabase registration error:", error.code);
+
+    if (error.code === "PGRST205") {
+      return NextResponse.json(
+        { message: "Таблица регистрации не создана в Supabase. Запустите supabase/schema.sql." },
+        { status: 503 },
+      );
+    }
+
     return NextResponse.json(
       { message: "Не удалось отправить заявку. Попробуйте ещё раз." },
       { status: 500 },
