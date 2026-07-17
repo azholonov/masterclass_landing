@@ -2,6 +2,8 @@
 
 Landing page for two offline masterclasses in Bishkek.
 
+Production: https://masterclasslanding.vercel.app
+
 ## Local setup
 
 1. Run `npm install`.

@@ -26,4 +26,13 @@
 - [x] Keep Supabase credentials server-only.
 - [x] Add actionable handling for a missing Supabase table.
 - [ ] Apply the schema to the remote Supabase project.
-- [ ] Validate production build and client rendering.
+- [x] Validate production build and client rendering.
+
+## Phase 6 — Vercel Deployment
+- [x] Link the local project to Vercel.
+- [x] Configure production Supabase environment variables.
+- [x] Deploy and verify the production URL.
+
+## Phase 7 — Content Cleanup
+- [x] Remove the participant-count social proof from the hero.
+- [x] Validate and redeploy the landing page.

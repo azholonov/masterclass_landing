@@ -22,18 +22,18 @@ const workshops = [
     description:
       "Соберём рабочий прототип приложения с AI-инструментами. Без лекций на два часа: придумали, написали, запустили.",
     features: ["Выберем идею и MVP", "Соберём интерфейс", "Запустим на телефоне"],
-    meta: ["3 часа", "до 12 человек", "ноутбук с собой"],
+    meta: ["2 часа", "до 12 человек", "ноутбук с собой"],
     className: "workshop-purple",
   },
   {
     number: "02",
     icon: Coins,
     title: "Экономика токенов",
-    subtitle: "Как спроектировать систему, которая работает",
+    subtitle: "Как уменшить использваоние токена до минимума и при этом сделать его ценным",
     description:
-      "Разберём токен не как спекуляцию, а как продуктовый механизм: ценность, стимулы, эмиссия и устойчивость модели.",
-    features: ["Разложим токеномику", "Посчитаем стимулы", "Проверим модель на прочность"],
-    meta: ["2,5 часа", "до 16 человек", "без сложной математики"],
+      "Разберем механизмы и лайфхаки экономии токенов.",
+    features: ["Разложим токеномику", "Посмотрим на что тратится лимиты", "Проверим лайфхаки экономии токенов"],
+    meta: ["2 часа", "до 16 человек", "без сложной математики"],
     className: "workshop-yellow",
   },
 ];
@@ -72,10 +72,6 @@ export default function Home() {
               <a className="button button-primary" href="#workshops">
                 Выбрать мастер-класс <ArrowDown size={18} />
               </a>
-              <div className="social-proof">
-                <div className="avatar-stack"><span>А</span><span>Д</span><span>Э</span></div>
-                <small><strong>24 участника</strong><br />уже были с нами</small>
-              </div>
             </div>
           </div>
 
@@ -159,7 +155,7 @@ export default function Home() {
       <footer className="footer container">
         <a className="brand" href="#top"><span className="brand-mark"><span /><span /><span /><span /></span>мастерская</a>
         <p>Практические встречи для любопытных людей.</p>
-        <a href="mailto:hello@example.com">hello@example.com</a>
+        <a href="mailto:hello@example.com">soloapps.dev@gmail.com</a>
       </footer>
     </main>
   );

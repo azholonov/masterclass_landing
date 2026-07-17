@@ -71,14 +71,6 @@ h1 { margin: 24px 0 24px; font-size: clamp(52px, 6.3vw, 88px); line-height: .98;
 .accent-script.yellow { color: #e7a900; }
 .hero-copy > p { max-width: 590px; color: var(--muted); font-family: system-ui, sans-serif; font-size: 18px; line-height: 1.7; }
 .hero-actions { display: flex; align-items: center; gap: 28px; margin-top: 34px; }
-.social-proof { display: flex; align-items: center; gap: 10px; font-family: system-ui, sans-serif; }
-.social-proof small { color: var(--muted); line-height: 1.35; }
-.social-proof strong { color: var(--ink); }
-.avatar-stack { display: flex; padding-left: 10px; }
-.avatar-stack span { display: grid; place-items: center; width: 34px; height: 34px; margin-left: -10px; border: 2px solid white; border-radius: 50%; background: var(--lavender); color: var(--purple-dark); font-size: 12px; font-weight: 800; }
-.avatar-stack span:nth-child(2) { background: var(--yellow); color: #714f00; }
-.avatar-stack span:nth-child(3) { background: #18151f; color: #fff; }
-
 .hero-visual { position: relative; isolation: isolate; }
 .hero-visual::before { content: ""; position: absolute; inset: 8% 1% 3%; border-radius: 44% 56% 48% 52%; background: var(--purple); transform: rotate(6deg); z-index: -2; }
 .hero-visual::after { content: ""; position: absolute; inset: 11% 3% 5%; border-radius: 50%; background: radial-gradient(circle, rgba(255,255,255,.8), transparent 66%); z-index: -1; }

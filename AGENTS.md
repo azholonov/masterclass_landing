@@ -2,7 +2,7 @@
 
 ## Summary
 - Russian-language landing page for workshop registration.
-- Current phase: Phase 5 — registration transport hardening.
+- Current phase: Phase 7 complete — Supabase schema application pending.
 - Workshops: mobile vibe coding and token economics.
 
 ## Key Paths
