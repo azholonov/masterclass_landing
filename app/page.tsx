@@ -10,6 +10,7 @@ import {
   MapPin,
   Sparkles,
   UsersRound,
+  Webcam,
 } from "lucide-react";
 import { RegistrationForm } from "@/components/RegistrationForm";
 
@@ -114,8 +115,9 @@ export default function Home() {
                 </ul>
                 <div className="card-meta">
                   <span><Clock3 size={15} />{workshop.meta[0]}</span>
-                  <span><UsersRound size={15} />{workshop.meta[1]}</span>
-                  <span><Sparkles size={15} />{workshop.meta[2]}</span>
+                  <span><Webcam size={15} />{workshop.meta[1]}</span>
+                  <span><UsersRound size={15} />{workshop.meta[2]}</span>
+                  <span><Sparkles size={15} />{workshop.meta[3]}</span>
                 </div>
                 <a className="card-link" href="#registration">Занять место <ArrowUpRight size={18} /></a>
               </article>
