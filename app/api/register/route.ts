@@ -1,5 +1,9 @@
 import { NextResponse } from "next/server";
+import { createHash, randomBytes } from "crypto";
 import { createSupabaseAdmin } from "@/lib/supabase";
+import { sendWelcomeEmail } from "@/lib/email";
+import { notifyAdminAboutRegistration } from "@/lib/telegram";
+import { isWorkshopId } from "@/lib/workshops";
 
 type RegistrationPayload = {
   name?: unknown;
@@ -22,14 +26,16 @@ export async function POST(request: Request) {
   const telegram = typeof payload.telegram === "string" ? payload.telegram.trim() : "";
   const workshop = typeof payload.workshop === "string" ? payload.workshop.trim() : "";
 
-  if (name.length < 2 || contact.length < 5) {
+  const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contact);
+
+  if (name.length < 2 || !isEmail) {
     return NextResponse.json(
-      { message: "Проверьте имя и контакт для связи." },
+      { message: "Проверьте имя и email." },
       { status: 400 },
     );
   }
 
-  if (!["vibecoding", "token-economics"].includes(workshop)) {
+  if (!isWorkshopId(workshop)) {
     return NextResponse.json({ message: "Выберите мастер-класс." }, { status: 400 });
   }
 
@@ -41,20 +47,24 @@ export async function POST(request: Request) {
     );
   }
 
+  const telegramStartToken = randomBytes(24).toString("base64url");
+  const telegramStartTokenHash = createHash("sha256").update(telegramStartToken).digest("hex");
+
   const { error } = await supabase.from("workshop_registrations").insert({
     name,
     contact,
     telegram: telegram || null,
     workshop,
     source: "landing",
+    telegram_start_token_hash: telegramStartTokenHash,
   });
 
   if (error) {
     console.error("Supabase registration error:", error.code);
 
-    if (error.code === "PGRST205") {
+    if (["PGRST204", "PGRST205"].includes(error.code)) {
       return NextResponse.json(
-        { message: "Таблица регистрации не создана в Supabase. Запустите supabase/schema.sql." },
+        { message: "Схема регистрации в Supabase не обновлена. Запустите supabase/schema.sql." },
         { status: 503 },
       );
     }
@@ -65,7 +75,28 @@ export async function POST(request: Request) {
     );
   }
 
+  const deliveryResults = await Promise.allSettled([
+    notifyAdminAboutRegistration({ name, email: contact, telegram, workshop }),
+    sendWelcomeEmail({ name, email: contact, workshop }),
+  ]);
+
+  for (const result of deliveryResults) {
+    if (result.status === "rejected") {
+      console.error("Registration notification error:", result.reason);
+    }
+  }
+
+  const emailWasSent = deliveryResults[1].status === "fulfilled";
+
+  const botUsername = process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME?.replace(/^@/, "");
+  const telegramBotUrl = botUsername
+    ? `https://t.me/${botUsername}?start=${telegramStartToken}`
+    : undefined;
+
   return NextResponse.json({
-    message: "Вы в списке! Детали мастер-класса отправим вам лично.",
+    message: emailWasSent
+      ? "Вы в списке! Приветственное письмо отправлено на email."
+      : "Вы в списке! Письмо пока не отправилось — мы свяжемся с вами лично.",
+    telegramBotUrl,
   });
 }

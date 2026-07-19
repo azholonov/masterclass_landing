@@ -6,10 +6,20 @@ create table if not exists public.workshop_registrations (
   name text not null check (char_length(name) between 2 and 120),
   contact text not null check (char_length(contact) between 5 and 200),
   telegram text,
+  telegram_chat_id bigint,
+  telegram_start_token_hash text,
   workshop text not null check (workshop in ('vibecoding', 'token-economics')),
   source text not null default 'landing',
   status text not null default 'new' check (status in ('new', 'confirmed', 'cancelled'))
 );
+
+alter table public.workshop_registrations
+  add column if not exists telegram_chat_id bigint,
+  add column if not exists telegram_start_token_hash text;
+
+create unique index if not exists workshop_registrations_telegram_start_token_idx
+  on public.workshop_registrations (telegram_start_token_hash)
+  where telegram_start_token_hash is not null;
 
 alter table public.workshop_registrations enable row level security;
 

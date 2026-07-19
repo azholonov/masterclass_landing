@@ -18,6 +18,8 @@ const workshops = [
   {
     number: "01",
     icon: Code2,
+    date: "15 августа · суббота",
+    dateTime: "2026-08-15",
     title: "Вайбкодим мобильное приложение",
     subtitle: "От идеи до первого билда — за один вечер",
     description:
@@ -29,12 +31,14 @@ const workshops = [
   {
     number: "02",
     icon: Coins,
+    date: "16 августа · воскресенье",
+    dateTime: "2026-08-16",
     title: "Экономика токенов",
     subtitle: "Как уменшить использваоние токена до минимума и при этом сделать его ценным",
     description:
       "Разберем механизмы и лайфхаки экономии токенов.",
     features: ["Разложим токеномику", "Посмотрим на что тратится лимиты", "Проверим лайфхаки экономии токенов"],
-    meta: ["2 часа", "online", "до 16 человек", "без сложной математики"],
+    meta: ["1 час", "online", "до 16 человек", "без сложной математики"],
     className: "workshop-yellow",
   },
 ];
@@ -107,6 +111,9 @@ export default function Home() {
                   <span className="card-number">{workshop.number}</span>
                   <span className="card-icon"><Icon size={30} strokeWidth={1.8} /></span>
                 </div>
+                <time className="card-date" dateTime={workshop.dateTime}>
+                  <CalendarDays size={16} /> {workshop.date}
+                </time>
                 <h3>{workshop.title}</h3>
                 <p className="card-subtitle">{workshop.subtitle}</p>
                 <p className="card-description">{workshop.description}</p>
@@ -145,9 +152,9 @@ export default function Home() {
       <section className="section container" id="registration">
         <div className="registration-panel">
           <div className="registration-copy">
-            <span className="mini-badge"><CalendarDays size={16} /> Следующая группа формируется</span>
+            <span className="mini-badge"><CalendarDays size={16} /> 15–16 августа 2026</span>
             <h2>Присоединяйтесь к <span className="accent-script yellow">мастерской</span></h2>
-            <p>Оставьте контакт — уточним удобную дату и пришлём все детали. Спамить не будем.</p>
+            <p>Выберите мастер-класс и оставьте контакт — пришлём все детали. Спамить не будем.</p>
             <div className="registration-doodle">↗</div>
           </div>
           <RegistrationForm />

@@ -36,3 +36,21 @@
 ## Phase 7 — Content Cleanup
 - [x] Remove the participant-count social proof from the hero.
 - [x] Validate and redeploy the landing page.
+
+## Phase 8 — August Schedule
+- [x] Schedule vibe coding for 15 August 2026.
+- [x] Schedule token economics for 16 August 2026.
+- [x] Add dates to workshop cards and registration choices.
+- [ ] Validate and redeploy the updated schedule.
+
+## Phase 9 — Participant Automation
+- [x] Notify the organizer in Telegram after each registration.
+- [x] Send the participant a welcome email through Gmail SMTP.
+- [x] Add Telegram bot activation and participant welcome flow.
+- [x] Store participant Telegram chat IDs for future messages.
+- [ ] Configure production secrets, webhook, and redeploy.
+
+## Phase 10 — Workshop Facilitation Plans
+- [x] Create the two-hour vibe coding plan and facilitator script.
+- [x] Create the one-hour AI token economics plan and facilitator script.
+- [ ] Add final examples, demos, worksheets, and supporting content.

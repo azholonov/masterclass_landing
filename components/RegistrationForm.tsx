@@ -6,6 +6,7 @@ import { ArrowUpRight, CheckCircle2, LoaderCircle } from "lucide-react";
 type FormState = {
   status: "idle" | "success" | "error";
   message: string;
+  telegramBotUrl?: string;
 };
 
 export function RegistrationForm() {
@@ -26,11 +27,12 @@ export function RegistrationForm() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(Object.fromEntries(formData.entries())),
       });
-      const result = (await response.json()) as { message?: string };
+      const result = (await response.json()) as { message?: string; telegramBotUrl?: string };
 
       setState({
         status: response.ok ? "success" : "error",
         message: result.message || "Не удалось отправить заявку.",
+        telegramBotUrl: response.ok ? result.telegramBotUrl : undefined,
       });
 
       if (response.ok) form.reset();
@@ -48,11 +50,11 @@ export function RegistrationForm() {
         <div className="workshop-options">
           <label>
             <input type="radio" name="workshop" value="vibecoding" defaultChecked />
-            <span>📱 Вайбкодим приложение</span>
+            <span>📱 15 августа · Вайбкодим приложение</span>
           </label>
           <label>
             <input type="radio" name="workshop" value="token-economics" />
-            <span>🪙 Экономика токенов</span>
+            <span>🪙 16 августа · Экономика токенов</span>
           </label>
         </div>
       </fieldset>
@@ -63,8 +65,8 @@ export function RegistrationForm() {
           <input name="name" type="text" placeholder="Например, Айжан" minLength={2} required />
         </label>
         <label>
-          <span>Email или телефон</span>
-          <input name="contact" type="text" placeholder="Чтобы прислать детали" minLength={5} required />
+          <span>Email</span>
+          <input name="contact" type="email" placeholder="you@example.com" autoComplete="email" required />
         </label>
       </div>
 
@@ -82,10 +84,17 @@ export function RegistrationForm() {
       </div>
 
       {state.message && (
-        <p className={`form-status ${state.status}`} role="status">
-          {state.status === "success" && <CheckCircle2 size={18} />}
-          {state.message}
-        </p>
+        <div className={`form-status ${state.status}`} role="status">
+          <p>
+            {state.status === "success" && <CheckCircle2 size={18} />}
+            {state.message}
+          </p>
+          {state.telegramBotUrl && (
+            <a href={state.telegramBotUrl} target="_blank" rel="noreferrer">
+              Получить приветствие в Telegram <ArrowUpRight size={17} />
+            </a>
+          )}
+        </div>
       )}
     </form>
   );
