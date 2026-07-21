@@ -76,7 +76,7 @@ export function RegistrationForm() {
       </label>
 
       <div className="form-footer">
-        <button className="button button-yellow" type="submit" disabled={pending}>
+        <button className="button button-primary" type="submit" disabled={pending}>
           {pending ? <LoaderCircle className="spin" size={19} /> : "Забронировать место"}
           {!pending && <ArrowUpRight size={19} />}
         </button>

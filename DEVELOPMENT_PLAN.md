@@ -54,3 +54,12 @@
 - [x] Create the two-hour vibe coding plan and facilitator script.
 - [x] Create the one-hour AI token economics plan and facilitator script.
 - [ ] Add final examples, demos, worksheets, and supporting content.
+
+## Phase 11 — Palette Refresh
+- [x] Replace the purple accent family with deep teal and soft mint.
+- [x] Validate the production build and responsive visual treatment.
+
+## Phase 12 — Reference-led Redesign
+- [x] Rebuild the visual direction around glass panels and gradient tiles.
+- [x] Preserve workshop content, schedule, and registration behavior.
+- [x] Validate the production build and responsive layouts.
