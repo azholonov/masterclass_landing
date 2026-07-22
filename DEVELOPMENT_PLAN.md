@@ -63,3 +63,9 @@
 - [x] Rebuild the visual direction around glass panels and gradient tiles.
 - [x] Preserve workshop content, schedule, and registration behavior.
 - [x] Validate the production build and responsive layouts.
+
+## Phase 13 — Mascot-led Redesign
+- [x] Create original robot, plant, and space-tech artwork from the references.
+- [x] Rebuild the landing page with a dark, lime, violet, and paper visual system.
+- [x] Preserve workshop content, August schedule, and registration behavior.
+- [x] Validate the production build and desktop/mobile layouts.

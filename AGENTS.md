@@ -2,13 +2,14 @@
 
 ## Summary
 - Russian-language landing page for workshop registration.
-- Current phase: Phase 8 — August schedule and redeployment.
+- Current phase: Phase 13 — mascot-led redesign complete.
 - Workshops: mobile vibe coding and token economics.
 
 ## Key Paths
 - `app/page.tsx` — landing page and registration UI.
 - `app/api/register/route.ts` — server-side registration endpoint.
 - `app/globals.css` — visual system and responsive styles.
+- `public/art/` — generated robot and botanical artwork.
 - `lib/supabase.ts` — Supabase server client.
 - `supabase/schema.sql` — database schema and RLS policy.
 - `DEVELOPMENT_PLAN.md` — numbered delivery phases.

@@ -1,11 +1,11 @@
+import Image from "next/image";
 import {
-  ArrowDown,
+  ArrowDownRight,
+  ArrowRight,
   ArrowUpRight,
   CalendarDays,
   Check,
   Clock3,
-  Code2,
-  Coins,
   MapPin,
   Sparkles,
   UsersRound,
@@ -16,163 +16,158 @@ import { RegistrationForm } from "@/components/RegistrationForm";
 const workshops = [
   {
     number: "01",
-    icon: Code2,
     date: "15 августа · суббота",
     dateTime: "2026-08-15",
     title: "Вайбкодим мобильное приложение",
     subtitle: "От идеи до первого билда — за один вечер",
     description:
-      "Соберём рабочий прототип приложения с AI-инструментами. Без лекций на два часа: придумали, написали, запустили.",
+      "Соберём рабочий прототип приложения с AI-инструментами. Придумали, написали, запустили — без двухчасовых лекций.",
     features: ["Выберем идею и MVP", "Соберём интерфейс", "Запустим на телефоне"],
-    meta: ["2 часа", "offline", "до 12 человек", "ноутбук с собой"],
-    tone: "blue",
+    meta: ["2 часа", "офлайн", "до 12 человек"],
+    image: "/art/vibecoding-robot.png",
+    alt: "Робот программирует приложение рядом с цифровым растением",
+    tone: "violet",
   },
   {
     number: "02",
-    icon: Coins,
     date: "16 августа · воскресенье",
     dateTime: "2026-08-16",
     title: "Экономика токенов",
-    subtitle: "Как тратить меньше токенов и получать больше пользы",
-    description: "Разберём, куда уходит лимит, и проверим практические способы экономии токенов.",
-    features: ["Разложим токеномику", "Найдём главные расходы", "Проверим способы экономии"],
-    meta: ["1 час", "online", "до 16 человек", "без сложной математики"],
-    tone: "lilac",
+    subtitle: "Меньше расходов — больше пользы от AI",
+    description:
+      "Разберём, куда уходит лимит, и на практике проверим способы экономить токены без потери качества результата.",
+    features: ["Разложим токеномику", "Найдём главные расходы", "Проверим экономию"],
+    meta: ["1 час", "онлайн", "до 16 человек"],
+    image: "/art/token-robot.png",
+    alt: "Робот изучает цифровые токены, диаграмму и спутник",
+    tone: "lime",
   },
 ];
-
-const tiles = Array.from({ length: 14 }, (_, index) => index);
 
 export default function Home() {
   return (
     <main>
-      <section className="hero-shell" id="top">
-        <div className="hero-glow hero-glow-blue" />
-        <div className="hero-glow hero-glow-lilac" />
-
+      <section className="hero" id="top">
         <nav className="nav container" aria-label="Главная навигация">
           <a className="brand" href="#top" aria-label="Мастерская — на главную">
-            <span className="brand-mark"><span /><span /><span /></span>
-            мастерская
+            <span className="brand-spark" aria-hidden="true">✦</span>
+            <span>МАСТЕР<span>СКАЯ</span></span>
           </a>
           <div className="nav-links">
-            <a href="#workshops">Мастер-классы</a>
-            <a href="#format">Формат</a>
+            <a href="#workshops">Встречи</a>
+            <a href="#format">Как это будет</a>
             <a href="#registration">Регистрация</a>
           </div>
-          <a className="button button-ghost nav-cta" href="#registration">
-            Записаться <ArrowUpRight size={17} />
+          <a className="round-link" href="#registration" aria-label="Записаться">
+            <ArrowUpRight size={21} />
           </a>
         </nav>
 
-        <div className="hero container">
-          <div className="hero-copy">
-            <div className="eyebrow"><Sparkles size={15} /> Бишкек · маленькие группы</div>
-            <h1>
-              <span>Учимся</span> <span className="title-soft">делать,</span><br />
-              <span className="title-soft">а не просто</span> <span>смотреть.</span>
-            </h1>
-            <p>
-              Практические мастер-классы для тех, кому интересны технологии,
-              продукты и новые идеи. На выходе — результат, который можно показать.
-            </p>
-            <div className="hero-actions">
-              <a className="button button-primary" href="#workshops">
-                Выбрать мастер-класс <ArrowDown size={18} />
-              </a>
-              <span className="hero-note">15–16 августа 2026</span>
-            </div>
-          </div>
+        <Image
+          className="hero-art"
+          src="/art/lab-hero.png"
+          alt="Дружелюбный робот в ярком жилете рядом с большим растением"
+          fill
+          priority
+          sizes="100vw"
+        />
+        <div className="hero-shade" />
 
-          <div className="hero-facts" aria-label="Краткая информация">
-            <div><strong>2</strong><span>мастер-класса</span></div>
-            <div><strong>15–16</strong><span>августа 2026</span></div>
-            <div><strong>1-й</strong><span>результат</span></div>
+        <div className="hero-content container">
+          <div className="hero-kicker"><span>Бишкек</span><span>15–16 августа</span><span>2026</span></div>
+          <h1>НЕ СМОТРИ.<br /><em>СОЗДАВАЙ.</em></h1>
+          <p>Практические мастер-классы для тех, кому мало просто знать. Сделай первый результат своими руками.</p>
+          <div className="hero-actions">
+            <a className="button button-lime" href="#workshops">
+              Выбрать мастер-класс <ArrowDownRight size={20} />
+            </a>
+            <span>Можно без опыта.<br />Нужно любопытство.</span>
           </div>
         </div>
 
-        <div className="tile-ribbon" aria-hidden="true">
-          {tiles.map((tile) => <span key={tile} />)}
+        <div className="hero-counter" aria-label="Два мастер-класса">
+          <strong>02</strong><span>две встречи<br />два результата</span>
+        </div>
+        <div className="marquee" aria-hidden="true">
+          <div>ПРАКТИКА ✦ ИДЕИ ✦ ТЕХНОЛОГИИ ✦ ПЕРВЫЙ БИЛД ✦ ПРАКТИКА ✦ ИДЕИ ✦ ТЕХНОЛОГИИ ✦</div>
         </div>
       </section>
 
-      <section className="section container" id="workshops">
-        <div className="section-heading">
-          <div>
-            <p className="kicker">Ближайшие встречи</p>
-            <h2>Выберите свой<br /><span>формат практики.</span></h2>
+      <section className="workshops section" id="workshops">
+        <div className="container">
+          <div className="section-heading">
+            <div>
+              <p className="eyebrow">Ближайшие встречи / 02</p>
+              <h2>ВЫБЕРИ СВОЮ<br /><span>ТОЧКУ СТАРТА.</span></h2>
+            </div>
+            <p>Небольшая группа, живой ведущий и задача, которую ты действительно успеешь закончить.</p>
           </div>
-          <p>Можно прийти без опыта. Главное — любопытство и желание сделать что-то своими руками.</p>
-        </div>
 
-        <div className="workshop-grid">
-          {workshops.map((workshop) => {
-            const Icon = workshop.icon;
-            return (
-              <article className={`workshop-card workshop-${workshop.tone}`} key={workshop.number}>
-                <div className="workshop-visual">
-                  <span className="card-number">{workshop.number}</span>
-                  <span className="card-icon"><Icon size={34} strokeWidth={1.6} /></span>
-                  <div className="mini-tiles" aria-hidden="true">
-                    <i /><i /><i /><i /><i /><i />
-                  </div>
+          <div className="workshop-grid">
+            {workshops.map((workshop) => (
+              <article className={`workshop-card card-${workshop.tone}`} key={workshop.number}>
+                <div className="workshop-image">
+                  <Image src={workshop.image} alt={workshop.alt} fill sizes="(max-width: 760px) 100vw, 50vw" />
+                  <span className="card-index">/{workshop.number}</span>
+                  <a href="#registration" className="card-arrow" aria-label={`Записаться: ${workshop.title}`}>
+                    <ArrowUpRight size={26} />
+                  </a>
                 </div>
                 <div className="workshop-content">
-                  <time className="card-date" dateTime={workshop.dateTime}>
-                    <CalendarDays size={16} /> {workshop.date}
-                  </time>
+                  <time dateTime={workshop.dateTime}><CalendarDays size={16} /> {workshop.date}</time>
                   <h3>{workshop.title}</h3>
                   <p className="card-subtitle">{workshop.subtitle}</p>
                   <p className="card-description">{workshop.description}</p>
-                  <ul className="feature-list">
+                  <ul>
                     {workshop.features.map((feature) => <li key={feature}><Check size={15} />{feature}</li>)}
                   </ul>
                   <div className="card-meta">
                     <span><Clock3 size={15} />{workshop.meta[0]}</span>
                     <span><Webcam size={15} />{workshop.meta[1]}</span>
                     <span><UsersRound size={15} />{workshop.meta[2]}</span>
-                    <span><Sparkles size={15} />{workshop.meta[3]}</span>
                   </div>
-                  <a className="card-link" href="#registration">Занять место <ArrowUpRight size={18} /></a>
                 </div>
               </article>
-            );
-          })}
+            ))}
+          </div>
         </div>
       </section>
 
-      <section className="section container" id="format">
-        <div className="experience-panel">
-          <div className="experience-copy">
-            <p className="kicker">Как это будет</p>
-            <h2>Меньше теории.<br /><span>Больше действия.</span></h2>
-            <p>Никаких рядов стульев и презентаций на 80 слайдов. Работаем в маленькой группе, задаём вопросы и двигаемся в своём темпе.</p>
-            <div className="venue-note"><MapPin size={18} /> Офлайн в Бишкеке · точную локацию пришлём после регистрации</div>
+      <section className="format section" id="format">
+        <div className="container format-grid">
+          <div className="format-title">
+            <p className="eyebrow">Как это работает</p>
+            <h2>МЕНЬШЕ<br />ТЕОРИИ.<br /><span>БОЛЬШЕ<br />ДЕЙСТВИЯ.</span></h2>
+            <div className="orbit-badge" aria-hidden="true"><span>✦</span></div>
           </div>
           <ol className="steps">
-            <li><span>01</span><div><strong>Коротко разбираемся</strong><p>Получаем ровно столько контекста, сколько нужно для старта.</p></div></li>
-            <li><span>02</span><div><strong>Собираем вместе</strong><p>Ведущий показывает, вы повторяете и адаптируете под свою идею.</p></div></li>
-            <li><span>03</span><div><strong>Уходим с результатом</strong><p>Готовый прототип или понятная модель — плюс материалы после встречи.</p></div></li>
+            <li><span>01</span><div><strong>Быстро разбираемся</strong><p>Получаем ровно столько контекста, сколько нужно для уверенного старта.</p></div></li>
+            <li><span>02</span><div><strong>Собираем вместе</strong><p>Ведущий показывает, вы повторяете и сразу адаптируете под свою идею.</p></div></li>
+            <li><span>03</span><div><strong>Уходим с результатом</strong><p>Рабочий прототип или понятная модель — плюс материалы после встречи.</p></div></li>
           </ol>
+          <div className="format-note">
+            <MapPin size={21} />
+            <p><strong>Бишкек + онлайн</strong>Точную локацию офлайн-встречи и ссылку на онлайн пришлём после регистрации.</p>
+          </div>
         </div>
       </section>
 
-      <section className="section container" id="registration">
-        <div className="registration-panel">
+      <section className="registration section" id="registration">
+        <div className="container registration-grid">
           <div className="registration-copy">
-            <span className="mini-badge"><CalendarDays size={16} /> 15–16 августа 2026</span>
-            <h2>Готовы перейти<br /><span>от идеи к делу?</span></h2>
-            <p>Выберите мастер-класс и оставьте контакт — пришлём все детали. Спамить не будем.</p>
-            <div className="registration-orbit" aria-hidden="true"><i /></div>
+            <div className="registration-tag"><Sparkles size={15} /> Остался один шаг</div>
+            <h2>ЗАЙМИ<br /><span>СВОЁ МЕСТО.</span></h2>
+            <p>Выбери мастер-класс и оставь контакт. Пришлём все детали — без спама и длинных цепочек писем.</p>
+            <a href="mailto:soloapps.dev@gmail.com">Есть вопрос? Напиши нам <ArrowRight size={17} /></a>
           </div>
           <RegistrationForm />
         </div>
       </section>
 
       <footer className="footer container">
-        <a className="brand" href="#top"><span className="brand-mark"><span /><span /><span /></span>мастерская</a>
+        <a className="brand" href="#top"><span className="brand-spark">✦</span><span>МАСТЕР<span>СКАЯ</span></span></a>
         <p>Практические встречи для любопытных людей.</p>
-        <a href="mailto:soloapps.dev@gmail.com">soloapps.dev@gmail.com</a>
+        <p>Бишкек · 2026</p>
       </footer>
     </main>
   );
