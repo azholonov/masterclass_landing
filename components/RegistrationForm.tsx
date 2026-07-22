@@ -2,6 +2,7 @@
 
 import { FormEvent, useState } from "react";
 import { ArrowUpRight, CheckCircle2, LoaderCircle } from "lucide-react";
+import type { WorkshopId } from "@/lib/workshops";
 
 type FormState = {
   status: "idle" | "success" | "error";
@@ -9,9 +10,15 @@ type FormState = {
   telegramBotUrl?: string;
 };
 
-export function RegistrationForm() {
+type RegistrationFormProps = {
+  availability: Record<WorkshopId, boolean>;
+};
+
+export function RegistrationForm({ availability }: RegistrationFormProps) {
   const [state, setState] = useState<FormState>({ status: "idle", message: "" });
   const [pending, setPending] = useState(false);
+  const [selectedWorkshop, setSelectedWorkshop] = useState<WorkshopId>("vibecoding");
+  const hasAvailablePlace = availability[selectedWorkshop];
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -49,12 +56,12 @@ export function RegistrationForm() {
         <legend>Куда идём?</legend>
         <div className="workshop-options">
           <label>
-            <input type="radio" name="workshop" value="vibecoding" defaultChecked />
-            <span>📱 15 августа · Вайбкодим приложение</span>
+            <input type="radio" name="workshop" value="vibecoding" defaultChecked onChange={() => setSelectedWorkshop("vibecoding")} />
+            <span>📱 15 августа · Вайбкодим приложение{!availability.vibecoding && <small>Мест нет · следующий набор</small>}</span>
           </label>
           <label>
-            <input type="radio" name="workshop" value="token-economics" />
-            <span>🪙 16 августа · Экономика токенов</span>
+            <input type="radio" name="workshop" value="token-economics" onChange={() => setSelectedWorkshop("token-economics")} />
+            <span>🪙 16 августа · Экономика токенов{!availability["token-economics"] && <small>Мест нет · следующий набор</small>}</span>
           </label>
         </div>
       </fieldset>
@@ -77,10 +84,10 @@ export function RegistrationForm() {
 
       <div className="form-footer">
         <button className="button button-primary" type="submit" disabled={pending}>
-          {pending ? <LoaderCircle className="spin" size={19} /> : "Забронировать место"}
+          {pending ? <LoaderCircle className="spin" size={19} /> : hasAvailablePlace ? "Забронировать место" : "Записаться на следующий набор"}
           {!pending && <ArrowUpRight size={19} />}
         </button>
-        <p>Нажимая кнопку, вы соглашаетесь на обработку данных.</p>
+        <p>{hasAvailablePlace ? "Нажимая кнопку, вы соглашаетесь на обработку данных." : "Мы сохраним заявку и сообщим вам о следующем запуске."}</p>
       </div>
 
       {state.message && (

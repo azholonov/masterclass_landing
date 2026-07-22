@@ -69,3 +69,10 @@
 - [x] Rebuild the landing page with a dark, lime, violet, and paper visual system.
 - [x] Preserve workshop content, August schedule, and registration behavior.
 - [x] Validate the production build and desktop/mobile layouts.
+
+## Phase 14 — Capacity and Next-run Waitlist
+- [x] Enforce workshop capacities without race-condition overbooking.
+- [x] Switch full workshops from registration to next-run waitlist messaging.
+- [x] Store waitlisted participants with the `next_run` status.
+- [ ] Apply the updated schema to Supabase and redeploy.
+- [x] Validate the production build.

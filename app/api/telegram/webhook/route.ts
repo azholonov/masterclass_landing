@@ -43,7 +43,7 @@ export async function POST(request: Request) {
   const tokenHash = createHash("sha256").update(match[1]).digest("hex");
   const { data, error } = await supabase
     .from("workshop_registrations")
-    .select("id, name, workshop")
+    .select("id, name, workshop, status")
     .eq("telegram_start_token_hash", tokenHash)
     .maybeSingle();
 
@@ -57,7 +57,8 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: true });
   }
 
-  await sendTelegramMessage(chatId, participantWelcomeText(data.name, data.workshop));
+  const registrationStatus = data.status === "next_run" ? "next_run" : "new";
+  await sendTelegramMessage(chatId, participantWelcomeText(data.name, data.workshop, registrationStatus));
 
   const { error: updateError } = await supabase
     .from("workshop_registrations")

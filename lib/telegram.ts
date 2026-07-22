@@ -1,4 +1,4 @@
-import { workshops, type WorkshopId } from "@/lib/workshops";
+import { workshops, type RegistrationStatus, type WorkshopId } from "@/lib/workshops";
 
 type SendMessageOptions = {
   parseMode?: "HTML";
@@ -45,6 +45,7 @@ export async function notifyAdminAboutRegistration(input: {
   email: string;
   telegram: string;
   workshop: WorkshopId;
+  registrationStatus: RegistrationStatus;
 }) {
   const adminChatId = process.env.TELEGRAM_ADMIN_CHAT_ID;
   if (!adminChatId) throw new Error("TELEGRAM_ADMIN_CHAT_ID is not configured");
@@ -52,7 +53,7 @@ export async function notifyAdminAboutRegistration(input: {
   const workshop = workshops[input.workshop];
   const telegram = input.telegram || "не указан";
   const text = [
-    "<b>Новая регистрация 🎉</b>",
+    input.registrationStatus === "next_run" ? "<b>Новая заявка на следующий набор 📝</b>" : "<b>Новая регистрация 🎉</b>",
     "",
     `<b>Имя:</b> ${escapeHtml(input.name)}`,
     `<b>Email:</b> ${escapeHtml(input.email)}`,
@@ -64,8 +65,16 @@ export async function notifyAdminAboutRegistration(input: {
   await sendTelegramMessage(adminChatId, text, { parseMode: "HTML" });
 }
 
-export function participantWelcomeText(name: string, workshopId: WorkshopId) {
+export function participantWelcomeText(name: string, workshopId: WorkshopId, registrationStatus: RegistrationStatus = "new") {
   const workshop = workshops[workshopId];
+  if (registrationStatus === "next_run") {
+    return [
+      `Привет, ${name}! 👋`,
+      "",
+      `Все места на мастер-класс «${workshop.title}» заняты, но вы в списке на следующий набор.`,
+      "Мы напишем вам первыми, когда назначим новую дату.",
+    ].join("\n");
+  }
   return [
     `Привет, ${name}! 👋`,
     "",

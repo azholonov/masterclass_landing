@@ -108,6 +108,7 @@ h2 span { color: #aaa69d; }
 .workshop-options label { cursor: pointer; }
 .workshop-options input { position: absolute; opacity: 0; }
 .workshop-options span { display: block; min-height: 56px; margin: 0 !important; padding: 12px; border: 1.5px solid #cbc6ba; border-radius: 11px; background: #fff; font-size: 10px !important; line-height: 1.4; text-transform: none !important; letter-spacing: 0 !important; }
+.workshop-options span small { display: block; margin-top: 5px; color: #9c2e24; font-size: 8px; font-weight: 900; text-transform: uppercase; }
 .workshop-options input:checked + span { border-color: var(--ink); background: var(--lime); box-shadow: 3px 3px 0 var(--ink); }
 .field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .registration-form > label { display: block; margin-top: 14px; }

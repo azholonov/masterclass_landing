@@ -3,7 +3,7 @@ import { createHash, randomBytes } from "crypto";
 import { createSupabaseAdmin } from "@/lib/supabase";
 import { sendWelcomeEmail } from "@/lib/email";
 import { notifyAdminAboutRegistration } from "@/lib/telegram";
-import { isWorkshopId } from "@/lib/workshops";
+import { isWorkshopId, type RegistrationStatus } from "@/lib/workshops";
 
 type RegistrationPayload = {
   name?: unknown;
@@ -50,19 +50,19 @@ export async function POST(request: Request) {
   const telegramStartToken = randomBytes(24).toString("base64url");
   const telegramStartTokenHash = createHash("sha256").update(telegramStartToken).digest("hex");
 
-  const { error } = await supabase.from("workshop_registrations").insert({
-    name,
-    contact,
-    telegram: telegram || null,
-    workshop,
-    source: "landing",
-    telegram_start_token_hash: telegramStartTokenHash,
+  const { data, error } = await supabase.rpc("register_workshop_participant", {
+    participant_name: name,
+    participant_contact: contact,
+    participant_telegram: telegram || null,
+    participant_workshop: workshop,
+    participant_source: "landing",
+    participant_telegram_token_hash: telegramStartTokenHash,
   });
 
   if (error) {
     console.error("Supabase registration error:", error.code);
 
-    if (["PGRST204", "PGRST205"].includes(error.code)) {
+    if (["PGRST202", "PGRST204", "PGRST205"].includes(error.code)) {
       return NextResponse.json(
         { message: "Схема регистрации в Supabase не обновлена. Запустите supabase/schema.sql." },
         { status: 503 },
@@ -75,9 +75,12 @@ export async function POST(request: Request) {
     );
   }
 
+  const registrationStatus = data as RegistrationStatus;
+  const isNextRun = registrationStatus === "next_run";
+
   const deliveryResults = await Promise.allSettled([
-    notifyAdminAboutRegistration({ name, email: contact, telegram, workshop }),
-    sendWelcomeEmail({ name, email: contact, workshop }),
+    notifyAdminAboutRegistration({ name, email: contact, telegram, workshop, registrationStatus }),
+    sendWelcomeEmail({ name, email: contact, workshop, registrationStatus }),
   ]);
 
   for (const result of deliveryResults) {
@@ -94,9 +97,14 @@ export async function POST(request: Request) {
     : undefined;
 
   return NextResponse.json({
-    message: emailWasSent
-      ? "Вы в списке! Приветственное письмо отправлено на email."
-      : "Вы в списке! Письмо пока не отправилось — мы свяжемся с вами лично.",
+    message: isNextRun
+      ? emailWasSent
+        ? "Места закончились — вы записаны на следующий набор. Подтверждение отправлено на email."
+        : "Места закончились — вы записаны на следующий набор. Мы свяжемся с вами лично."
+      : emailWasSent
+        ? "Вы в списке! Приветственное письмо отправлено на email."
+        : "Вы в списке! Письмо пока не отправилось — мы свяжемся с вами лично.",
     telegramBotUrl,
+    registrationStatus,
   });
 }

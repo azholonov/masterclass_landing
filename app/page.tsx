@@ -12,6 +12,10 @@ import {
   Webcam,
 } from "lucide-react";
 import { RegistrationForm } from "@/components/RegistrationForm";
+import { createSupabaseAdmin } from "@/lib/supabase";
+import { workshops as workshopDetails, type WorkshopId } from "@/lib/workshops";
+
+export const dynamic = "force-dynamic";
 
 const workshops = [
   {
@@ -44,7 +48,35 @@ const workshops = [
   },
 ];
 
-export default function Home() {
+async function getWorkshopAvailability(): Promise<Record<WorkshopId, boolean>> {
+  const availability: Record<WorkshopId, boolean> = {
+    vibecoding: true,
+    "token-economics": true,
+  };
+  const supabase = createSupabaseAdmin();
+  if (!supabase) return availability;
+
+  await Promise.all(
+    (Object.keys(workshopDetails) as WorkshopId[]).map(async (workshop) => {
+      const { count, error } = await supabase
+        .from("workshop_registrations")
+        .select("id", { count: "exact", head: true })
+        .eq("workshop", workshop)
+        .in("status", ["new", "confirmed"]);
+
+      if (error) {
+        console.error("Workshop availability error:", error.code);
+        return;
+      }
+      availability[workshop] = (count ?? 0) < workshopDetails[workshop].capacity;
+    }),
+  );
+
+  return availability;
+}
+
+export default async function Home() {
+  const availability = await getWorkshopAvailability();
   return (
     <main>
       <section className="hero" id="top">
@@ -160,7 +192,7 @@ export default function Home() {
             <p>Выбери мастер-класс и оставь контакт. Пришлём все детали — без спама и длинных цепочек писем.</p>
             <a href="mailto:soloapps.dev@gmail.com">Есть вопрос? Напиши нам <ArrowRight size={17} /></a>
           </div>
-          <RegistrationForm />
+          <RegistrationForm availability={availability} />
         </div>
       </section>
 
