@@ -3,13 +3,18 @@ import {
   ArrowDownRight,
   ArrowRight,
   ArrowUpRight,
+  BadgeDollarSign,
   CalendarDays,
   Check,
   Clock3,
+  Lightbulb,
   MapPin,
+  PackageCheck,
   Sparkles,
+  Target,
   UsersRound,
   Webcam,
+  Wrench,
 } from "lucide-react";
 import { RegistrationForm } from "@/components/RegistrationForm";
 import { createSupabaseAdmin } from "@/lib/supabase";
@@ -17,41 +22,73 @@ import { workshops as workshopDetails, type WorkshopId } from "@/lib/workshops";
 
 export const dynamic = "force-dynamic";
 
-const workshops = [
+const workshop = {
+  number: "01",
+  date: "15 августа · суббота",
+  dateTime: "2026-08-15",
+  title: "Вайбкодим мобильное приложение",
+  subtitle: "От идеи до первого билда — за один вечер",
+  description:
+    "Соберём рабочий прототип приложения с AI-инструментами. Придумали, написали, запустили — без двухчасовых лекций.",
+  features: ["Выберем идею и MVP", "Соберём интерфейс", "Запустим на телефоне"],
+  meta: ["2 часа", "офлайн", "до 12 человек"],
+  image: "/art/vibecoding-robot.png",
+  alt: "Робот программирует приложение рядом с цифровым растением",
+  tone: "violet",
+};
+
+const productStory = [
   {
     number: "01",
-    date: "15 августа · суббота",
-    dateTime: "2026-08-15",
-    title: "Вайбкодим мобильное приложение",
-    subtitle: "От идеи до первого билда — за один вечер",
+    label: "Кому подойдёт",
+    title: "Тем, у кого есть идея, но нет команды разработчиков",
     description:
-      "Соберём рабочий прототип приложения с AI-инструментами. Придумали, написали, запустили — без двухчасовых лекций.",
-    features: ["Выберем идею и MVP", "Соберём интерфейс", "Запустим на телефоне"],
-    meta: ["2 часа", "офлайн", "до 12 человек"],
-    image: "/art/vibecoding-robot.png",
-    alt: "Робот программирует приложение рядом с цифровым растением",
-    tone: "violet",
+      "Предпринимателям, продактам, дизайнерам и всем, кто хочет сам создавать мобильные продукты — даже без опыта в коде.",
+    icon: Target,
+    tone: "lime",
   },
   {
     number: "02",
-    date: "16 августа · воскресенье",
-    dateTime: "2026-08-16",
-    title: "Экономика токенов",
-    subtitle: "Меньше расходов — больше пользы от AI",
+    label: "С какой проблемой приходят",
+    title: "Идея есть. Непонятно, как превратить её в приложение",
     description:
-      "Разберём, куда уходит лимит, и на практике проверим способы экономить токены без потери качества результата.",
-    features: ["Разложим токеномику", "Найдём главные расходы", "Проверим экономию"],
-    meta: ["1 час", "онлайн", "до 16 человек"],
-    image: "/art/token-robot.png",
-    alt: "Робот изучает цифровые токены, диаграмму и спутник",
-    tone: "lime",
+      "Курсы слишком долгие, разработка на заказ — дорогая, а десятки инструментов и технологий мешают сделать первый шаг.",
+    icon: Lightbulb,
+    tone: "paper",
+  },
+  {
+    number: "03",
+    label: "Что делаем на встрече",
+    title: "Проходим весь путь от идеи до запуска на телефоне",
+    description:
+      "Формулируем MVP, создаём интерфейс с AI, собираем рабочий прототип и запускаем его на реальном устройстве.",
+    icon: Wrench,
+    tone: "violet",
+  },
+  {
+    number: "04",
+    label: "С чем уходите",
+    title: "Своё работающее приложение, код и понятный следующий шаг",
+    description:
+      "Забираете проект, проверенные промпты и план развития — чтобы следующий прототип собрать уже самостоятельно.",
+    icon: PackageCheck,
+    tone: "paper",
+  },
+  {
+    number: "05",
+    label: "За что платите",
+    title: "Не за лекцию. За короткий путь к первому результату",
+    description:
+      "Вместо недель хаотичных видео — два часа практики, помощь на каждом сложном шаге и готовый результат к концу встречи.",
+    icon: BadgeDollarSign,
+    tone: "cyan",
   },
 ];
 
 async function getWorkshopAvailability(): Promise<Record<WorkshopId, boolean>> {
   const availability: Record<WorkshopId, boolean> = {
     vibecoding: true,
-    "token-economics": true,
+    "token-economics": false,
   };
   const supabase = createSupabaseAdmin();
   if (!supabase) return availability;
@@ -106,19 +143,19 @@ export default async function Home() {
         <div className="hero-shade" />
 
         <div className="hero-content container">
-          <div className="hero-kicker"><span>Бишкек</span><span>15–16 августа</span><span>2026</span></div>
+          <div className="hero-kicker"><span>Бишкек</span><span>15 августа</span><span>2026</span></div>
           <h1>НЕ СМОТРИ.<br /><em>СОЗДАВАЙ.</em></h1>
-          <p>Практические мастер-классы для тех, кому мало просто знать. Сделай первый результат своими руками.</p>
+          <p>Практический мастер-класс по мобильному вайбкодингу. Сделай своё первое приложение своими руками.</p>
           <div className="hero-actions">
             <a className="button button-lime" href="#workshops">
-              Выбрать мастер-класс <ArrowDownRight size={20} />
+              Узнать о мастер-классе <ArrowDownRight size={20} />
             </a>
             <span>Можно без опыта.<br />Нужно любопытство.</span>
           </div>
         </div>
 
-        <div className="hero-counter" aria-label="Два мастер-класса">
-          <strong>02</strong><span>две встречи<br />два результата</span>
+        <div className="hero-counter" aria-label="Один мастер-класс">
+          <strong>01</strong><span>одна встреча<br />готовый прототип</span>
         </div>
         <div className="marquee" aria-hidden="true">
           <div>ПРАКТИКА ✦ ИДЕИ ✦ ТЕХНОЛОГИИ ✦ ПЕРВЫЙ БИЛД ✦ ПРАКТИКА ✦ ИДЕИ ✦ ТЕХНОЛОГИИ ✦</div>
@@ -129,38 +166,69 @@ export default async function Home() {
         <div className="container">
           <div className="section-heading">
             <div>
-              <p className="eyebrow">Ближайшие встречи / 02</p>
-              <h2>ВЫБЕРИ СВОЮ<br /><span>ТОЧКУ СТАРТА.</span></h2>
+              <p className="eyebrow">Ближайшая встреча / 01</p>
+              <h2>ТВОЯ ТОЧКА<br /><span>СТАРТА.</span></h2>
             </div>
             <p>Небольшая группа, живой ведущий и задача, которую ты действительно успеешь закончить.</p>
           </div>
 
           <div className="workshop-grid">
-            {workshops.map((workshop) => (
-              <article className={`workshop-card card-${workshop.tone}`} key={workshop.number}>
-                <div className="workshop-image">
-                  <Image src={workshop.image} alt={workshop.alt} fill sizes="(max-width: 760px) 100vw, 50vw" />
-                  <span className="card-index">/{workshop.number}</span>
-                  <a href="#registration" className="card-arrow" aria-label={`Записаться: ${workshop.title}`}>
-                    <ArrowUpRight size={26} />
-                  </a>
+            <article className={`workshop-card card-${workshop.tone}`}>
+              <div className="workshop-image">
+                <Image src={workshop.image} alt={workshop.alt} fill sizes="(max-width: 760px) 100vw, 760px" />
+                <span className="card-index">/{workshop.number}</span>
+                <a href="#registration" className="card-arrow" aria-label={`Записаться: ${workshop.title}`}>
+                  <ArrowUpRight size={26} />
+                </a>
+              </div>
+              <div className="workshop-content">
+                <time dateTime={workshop.dateTime}><CalendarDays size={16} /> {workshop.date}</time>
+                <h3>{workshop.title}</h3>
+                <p className="card-subtitle">{workshop.subtitle}</p>
+                <p className="card-description">{workshop.description}</p>
+                <ul>
+                  {workshop.features.map((feature) => <li key={feature}><Check size={15} />{feature}</li>)}
+                </ul>
+                <div className="card-meta">
+                  <span><Clock3 size={15} />{workshop.meta[0]}</span>
+                  <span><Webcam size={15} />{workshop.meta[1]}</span>
+                  <span><UsersRound size={15} />{workshop.meta[2]}</span>
                 </div>
-                <div className="workshop-content">
-                  <time dateTime={workshop.dateTime}><CalendarDays size={16} /> {workshop.date}</time>
-                  <h3>{workshop.title}</h3>
-                  <p className="card-subtitle">{workshop.subtitle}</p>
-                  <p className="card-description">{workshop.description}</p>
-                  <ul>
-                    {workshop.features.map((feature) => <li key={feature}><Check size={15} />{feature}</li>)}
-                  </ul>
-                  <div className="card-meta">
-                    <span><Clock3 size={15} />{workshop.meta[0]}</span>
-                    <span><Webcam size={15} />{workshop.meta[1]}</span>
-                    <span><UsersRound size={15} />{workshop.meta[2]}</span>
-                  </div>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section className="product-story section" id="product">
+        <div className="container">
+          <div className="product-story-heading">
+            <div>
+              <p className="eyebrow">Мастер-класс как продукт / 05 частей</p>
+              <h2>НЕ ПРОСТО<br /><span>ПОСЛУШАТЬ.</span></h2>
+            </div>
+            <div className="product-promise">
+              <p>За одну встречу превратите идею мобильного приложения в работающий прототип на своём телефоне.</p>
+            </div>
+          </div>
+
+          <div className="product-story-grid">
+            {productStory.map(({ number, label, title, description, icon: Icon, tone }) => (
+              <article className={`product-story-card story-${tone}`} key={number}>
+                <div className="story-card-top">
+                  <span>/{number}</span>
+                  <Icon size={25} strokeWidth={1.8} aria-hidden="true" />
                 </div>
+                <p className="story-label">{label}</p>
+                <h3>{title}</h3>
+                <p className="story-description">{description}</p>
               </article>
             ))}
+          </div>
+
+          <div className="product-story-cta">
+            <p><strong>На выходе — не домашнее задание.</strong> На выходе — приложение, которое уже можно показать.</p>
+            <a className="button button-dark" href="#registration">Собрать своё <ArrowDownRight size={20} /></a>
           </div>
         </div>
       </section>
@@ -175,11 +243,11 @@ export default async function Home() {
           <ol className="steps">
             <li><span>01</span><div><strong>Быстро разбираемся</strong><p>Получаем ровно столько контекста, сколько нужно для уверенного старта.</p></div></li>
             <li><span>02</span><div><strong>Собираем вместе</strong><p>Ведущий показывает, вы повторяете и сразу адаптируете под свою идею.</p></div></li>
-            <li><span>03</span><div><strong>Уходим с результатом</strong><p>Рабочий прототип или понятная модель — плюс материалы после встречи.</p></div></li>
+            <li><span>03</span><div><strong>Уходим с результатом</strong><p>Рабочий прототип приложения — плюс материалы после встречи.</p></div></li>
           </ol>
           <div className="format-note">
             <MapPin size={21} />
-            <p><strong>Бишкек + онлайн</strong>Точную локацию офлайн-встречи и ссылку на онлайн пришлём после регистрации.</p>
+            <p><strong>Офлайн в Бишкеке</strong>Точную локацию встречи пришлём после регистрации.</p>
           </div>
         </div>
       </section>
@@ -189,7 +257,7 @@ export default async function Home() {
           <div className="registration-copy">
             <div className="registration-tag"><Sparkles size={15} /> Остался один шаг</div>
             <h2>ЗАЙМИ<br /><span>СВОЁ МЕСТО.</span></h2>
-            <p>Выбери мастер-класс и оставь контакт. Пришлём все детали — без спама и длинных цепочек писем.</p>
+            <p>Оставь контакт, чтобы забронировать место. Пришлём все детали — без спама и длинных цепочек писем.</p>
             <a href="mailto:soloapps.dev@gmail.com">Есть вопрос? Напиши нам <ArrowRight size={17} /></a>
           </div>
           <RegistrationForm availability={availability} />

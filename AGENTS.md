@@ -2,8 +2,8 @@
 
 ## Summary
 - Russian-language landing page for workshop registration.
-- Current phase: Phase 13 — mascot-led redesign complete.
-- Workshops: mobile vibe coding and token economics.
+- Current phase: Phase 15 — vibecoding-only landing complete.
+- Workshop: mobile vibe coding.
 
 ## Key Paths
 - `app/page.tsx` — landing page and registration UI.

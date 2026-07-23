@@ -76,3 +76,13 @@
 - [x] Store waitlisted participants with the `next_run` status.
 - [ ] Apply the updated schema to Supabase and redeploy.
 - [x] Validate the production build.
+
+## Phase 15 — Vibecoding Focus
+- [x] Remove token economics from the public landing page and registration form.
+- [x] Rewrite shared messaging around the mobile vibecoding workshop.
+- [x] Validate the production build and responsive layout.
+
+## Phase 16 — Product Story
+- [x] Package the workshop value proposition into five clear parts.
+- [x] Add the product story section to the landing page.
+- [x] Validate the production build and responsive layout.

@@ -35,8 +35,8 @@ export async function POST(request: Request) {
     );
   }
 
-  if (!isWorkshopId(workshop)) {
-    return NextResponse.json({ message: "Выберите мастер-класс." }, { status: 400 });
+  if (!isWorkshopId(workshop) || workshop !== "vibecoding") {
+    return NextResponse.json({ message: "Регистрация доступна только на мастер-класс по вайбкодингу." }, { status: 400 });
   }
 
   const supabase = createSupabaseAdmin();

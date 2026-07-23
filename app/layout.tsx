@@ -3,7 +3,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Мастерская — учимся делать, а не смотреть",
-  description: "Практические мастер-классы по вайбкодингу мобильных приложений и экономике токенов.",
+  description: "Практический мастер-класс по вайбкодингу мобильных приложений в Бишкеке.",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

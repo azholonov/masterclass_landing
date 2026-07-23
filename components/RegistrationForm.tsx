@@ -17,8 +17,7 @@ type RegistrationFormProps = {
 export function RegistrationForm({ availability }: RegistrationFormProps) {
   const [state, setState] = useState<FormState>({ status: "idle", message: "" });
   const [pending, setPending] = useState(false);
-  const [selectedWorkshop, setSelectedWorkshop] = useState<WorkshopId>("vibecoding");
-  const hasAvailablePlace = availability[selectedWorkshop];
+  const hasAvailablePlace = availability.vibecoding;
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -52,19 +51,7 @@ export function RegistrationForm({ availability }: RegistrationFormProps) {
 
   return (
     <form className="registration-form" onSubmit={handleSubmit}>
-      <fieldset>
-        <legend>Куда идём?</legend>
-        <div className="workshop-options">
-          <label>
-            <input type="radio" name="workshop" value="vibecoding" defaultChecked onChange={() => setSelectedWorkshop("vibecoding")} />
-            <span>📱 15 августа · Вайбкодим приложение{!availability.vibecoding && <small>Мест нет · следующий набор</small>}</span>
-          </label>
-          <label>
-            <input type="radio" name="workshop" value="token-economics" onChange={() => setSelectedWorkshop("token-economics")} />
-            <span>🪙 16 августа · Экономика токенов{!availability["token-economics"] && <small>Мест нет · следующий набор</small>}</span>
-          </label>
-        </div>
-      </fieldset>
+      <input type="hidden" name="workshop" value="vibecoding" />
 
       <div className="field-grid">
         <label>
