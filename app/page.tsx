@@ -7,9 +7,11 @@ import {
   CalendarDays,
   Check,
   Clock3,
+  Code2,
   Lightbulb,
   MapPin,
   PackageCheck,
+  Smartphone,
   Sparkles,
   Target,
   UsersRound,
@@ -125,6 +127,7 @@ export default async function Home() {
           <div className="nav-links">
             <a href="#workshops">Встречи</a>
             <a href="#format">Как это будет</a>
+            <a href="#expert">Эксперт</a>
             <a href="#registration">Регистрация</a>
           </div>
           <a className="round-link" href="#registration" aria-label="Записаться">
@@ -248,6 +251,42 @@ export default async function Home() {
           <div className="format-note">
             <MapPin size={21} />
             <p><strong>Офлайн в Бишкеке</strong>Точную локацию встречи пришлём после регистрации.</p>
+          </div>
+        </div>
+      </section>
+
+      <section className="expert section" id="expert">
+        <div className="container expert-grid">
+          <div className="expert-visual" aria-label="Акыл Жолонов, ведущий мастер-класса">
+            <Image
+              className="expert-photo"
+              src="/art/akyl-zholonov.png"
+              alt="Акыл Жолонов — ведущий мастер-класса"
+              width={1018}
+              height={1018}
+              sizes="(max-width: 940px) 90vw, 480px"
+            />
+            <div className="expert-years"><strong>10+</strong><span>лет в<br />разработке</span></div>
+            <span className="expert-role">Senior Software Engineer</span>
+          </div>
+
+          <div className="expert-copy">
+            <p className="eyebrow">Кто ведёт мастер-класс</p>
+            <h2>АКЫЛ<br /><span>ЖОЛОНОВ.</span></h2>
+            <p className="expert-lead">Senior software engineer с более чем 10-летним опытом разработки.</p>
+            <p className="expert-bio">Работает с .NET, мобильной разработкой и AI-инструментами, создаёт собственные iOS-приложения и проводит практические технологические воркшопы.</p>
+
+            <ul className="expert-skills" aria-label="Экспертиза">
+              <li><Code2 size={17} /> .NET</li>
+              <li><Smartphone size={17} /> Mobile &amp; iOS</li>
+              <li><Sparkles size={17} /> AI-инструменты</li>
+            </ul>
+
+            <div className="expert-note">
+              <span>Подход</span>
+              <p>Не пересказывает документацию — показывает рабочий процесс, которым пользуется сам.</p>
+            </div>
+            <a className="expert-link" href="#registration">Попасть на мастер-класс <ArrowDownRight size={18} /></a>
           </div>
         </div>
       </section>

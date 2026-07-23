@@ -86,3 +86,13 @@
 - [x] Package the workshop value proposition into five clear parts.
 - [x] Add the product story section to the landing page.
 - [x] Validate the production build and responsive layout.
+
+## Phase 17 — Expert Profile
+- [x] Add the expert biography and core areas of experience.
+- [x] Connect the expert section to the page navigation and registration flow.
+- [x] Validate the production build and responsive layout.
+
+## Phase 18 — Expert Photo
+- [x] Add the supplied expert portrait to the public artwork.
+- [x] Replace the placeholder monogram with the portrait.
+- [x] Validate the production build.

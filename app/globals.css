@@ -117,6 +117,28 @@ h2 span { color: #aaa69d; }
 .format-note p { margin: 0; font-size: 12px; line-height: 1.45; }
 .format-note strong { display: block; margin-bottom: 3px; font-size: 15px; }
 
+.expert { color: var(--ink); background: var(--paper); }
+.expert-grid { display: grid; grid-template-columns: .86fr 1.14fr; gap: 90px; align-items: center; }
+.expert-visual { position: relative; display: flex; align-items: center; justify-content: center; min-height: 570px; overflow: hidden; border: 2px solid var(--ink); border-radius: 30px; background: var(--violet); box-shadow: 10px 10px 0 var(--ink); }
+.expert-visual::before { content: ""; position: absolute; width: 390px; height: 390px; border: 2px solid rgba(255,255,255,.28); border-radius: 50%; }
+.expert-visual::after { content: "✦"; position: absolute; right: 30px; top: 20px; color: var(--lime); font-size: 74px; line-height: 1; }
+.expert-photo { position: relative; z-index: 1; width: min(92%, 520px); height: auto; filter: drop-shadow(0 24px 30px rgba(5,9,21,.24)); }
+.expert-years { position: absolute; z-index: 2; left: 25px; top: 26px; display: flex; align-items: center; gap: 10px; padding: 12px 14px; border: 2px solid var(--ink); border-radius: 14px; color: var(--ink); background: var(--lime); box-shadow: 4px 4px 0 var(--ink); transform: rotate(-3deg); }
+.expert-years strong { font-size: 30px; line-height: 1; }
+.expert-years span { font-size: 8px; font-weight: 900; line-height: 1.3; text-transform: uppercase; letter-spacing: .08em; }
+.expert-role { position: absolute; z-index: 2; right: 25px; bottom: 24px; padding: 9px 12px; border-radius: 999px; color: #fff; background: var(--ink); font-size: 9px; font-weight: 900; text-transform: uppercase; letter-spacing: .1em; }
+.expert-copy .eyebrow { margin-bottom: 21px; }
+.expert-copy h2 span { color: var(--violet); }
+.expert-lead { max-width: 580px; margin: 28px 0 13px; font-size: 22px; font-weight: 800; line-height: 1.35; letter-spacing: -.02em; }
+.expert-bio { max-width: 610px; margin-bottom: 25px; color: #6e6a63; font-size: 14px; line-height: 1.7; }
+.expert-skills { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 26px; padding: 0; list-style: none; }
+.expert-skills li { display: inline-flex; align-items: center; gap: 7px; padding: 9px 12px; border: 1.5px solid var(--ink); border-radius: 999px; font-size: 10px; font-weight: 900; }
+.expert-skills li:first-child { background: var(--lime); }
+.expert-note { display: grid; grid-template-columns: 82px 1fr; gap: 18px; margin-bottom: 25px; padding: 18px 0; border-top: 1px solid #cbc6bc; border-bottom: 1px solid #cbc6bc; }
+.expert-note span { padding-top: 3px; color: var(--violet); font-size: 9px; font-weight: 900; text-transform: uppercase; letter-spacing: .12em; }
+.expert-note p { margin: 0; font-size: 13px; font-weight: 700; line-height: 1.55; }
+.expert-link { display: inline-flex; align-items: center; gap: 9px; padding-bottom: 4px; border-bottom: 2px solid var(--ink); font-size: 12px; font-weight: 950; }
+
 .registration { position: relative; overflow: hidden; background: #e9e5db; }
 .registration::before { content: "✦"; position: absolute; right: 3vw; top: 25px; color: rgba(118,81,230,.12); font-size: 260px; line-height: 1; }
 .registration-grid { position: relative; display: grid; grid-template-columns: .85fr 1.15fr; gap: 75px; align-items: center; }
@@ -157,11 +179,12 @@ h2 span { color: #aaa69d; }
   .nav-links { display: none; }
   .hero-art { object-position: 63% center; opacity: .72; }
   .hero-shade { background: linear-gradient(90deg, rgba(4,8,18,.98), rgba(4,8,18,.7) 58%, rgba(4,8,18,.18)); }
-  .section-heading, .product-story-heading, .format-grid, .registration-grid { grid-template-columns: 1fr; gap: 45px; }
+  .section-heading, .product-story-heading, .format-grid, .expert-grid, .registration-grid { grid-template-columns: 1fr; gap: 45px; }
   .product-story-card { grid-column: span 3; }
   .product-story-card:nth-child(4) { grid-column: span 3; }
   .product-story-card:last-child { grid-column: 2 / span 4; }
   .format-note { grid-column: 1; margin-top: 0; }
+  .expert-visual { min-height: 480px; }
   .registration-copy { max-width: 650px; }
 }
 
@@ -193,6 +216,12 @@ h2 span { color: #aaa69d; }
   .orbit-badge { display: none; }
   .steps li { grid-template-columns: 35px 1fr; gap: 14px; padding: 27px 0; }
   .format-note { margin-top: 0; }
+  .expert-grid { gap: 48px; }
+  .expert-visual { min-height: 430px; border-radius: 24px; box-shadow: 6px 6px 0 var(--ink); }
+  .expert-visual::before { width: 290px; height: 290px; }
+  .expert-photo { width: min(94%, 430px); }
+  .expert-lead { font-size: 19px; }
+  .expert-note { grid-template-columns: 1fr; gap: 8px; }
   .registration-form { padding: 22px 16px; box-shadow: 6px 6px 0 var(--ink); }
   .workshop-options, .field-grid { grid-template-columns: 1fr; }
   .form-footer { align-items: stretch; flex-direction: column; }
