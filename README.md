@@ -61,6 +61,10 @@ Telegram bots cannot initiate a private chat from an `@username`. After register
 the participant gets a personal bot link and must press **Start** once. The bot then
 sends the welcome message and saves the chat ID for later communication.
 
+The private CRM can then send individual announcements, schedule changes, payment
+reminders, or custom messages. Every attempt is recorded in
+`crm_telegram_messages` with its delivery result.
+
 ## Gmail setup
 
 Enable 2-Step Verification on `soloapps.dev@gmail.com`, create a Google App Password,

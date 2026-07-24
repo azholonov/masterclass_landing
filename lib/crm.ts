@@ -3,12 +3,14 @@ export const paymentStatuses = ["unpaid", "partial", "paid", "refunded"] as cons
 export const instructionsStatuses = ["not_sent", "sent", "acknowledged"] as const;
 export const contactStatuses = ["not_contacted", "contacted", "replied"] as const;
 export const attendanceStatuses = ["pending", "attended", "no_show"] as const;
+export const telegramMessageTypes = ["announcement", "schedule", "payment", "custom"] as const;
 
 export type RegistrationStatus = (typeof registrationStatuses)[number];
 export type PaymentStatus = (typeof paymentStatuses)[number];
 export type InstructionsStatus = (typeof instructionsStatuses)[number];
 export type ContactStatus = (typeof contactStatuses)[number];
 export type AttendanceStatus = (typeof attendanceStatuses)[number];
+export type TelegramMessageType = (typeof telegramMessageTypes)[number];
 
 export type Participant = {
   id: string;
@@ -18,6 +20,8 @@ export type Participant = {
   contact: string;
   telegram: string | null;
   telegram_chat_id: number | null;
+  last_telegram_sent_at: string | null;
+  last_telegram_message_type: TelegramMessageType | null;
   workshop: string;
   source: string;
   status: RegistrationStatus;
@@ -35,7 +39,8 @@ export type Participant = {
 
 export const participantSelect = [
   "id", "created_at", "updated_at", "name", "contact", "telegram",
-  "telegram_chat_id", "workshop", "source", "status", "payment_status",
+  "telegram_chat_id", "last_telegram_sent_at", "last_telegram_message_type",
+  "workshop", "source", "status", "payment_status",
   "payment_amount", "paid_at", "instructions_status", "instructions_sent_at",
   "contact_status", "last_contacted_at", "attendance_status", "next_action", "notes",
 ].join(",");

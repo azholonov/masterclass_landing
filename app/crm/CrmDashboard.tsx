@@ -2,10 +2,10 @@
 
 import { useMemo, useState } from "react";
 import {
-  Banknote, Check, CircleAlert, LoaderCircle, Mail, MessageCircle,
-  Save, Search, Send, UserCheck, Users,
+  Banknote, CalendarClock, Check, CircleAlert, CreditCard, LoaderCircle, Mail,
+  Megaphone, MessageCircle, MessageSquareText, Save, Search, Send, UserCheck, Users,
 } from "lucide-react";
-import type { Participant } from "@/lib/crm";
+import type { Participant, TelegramMessageType } from "@/lib/crm";
 import styles from "./crm.module.css";
 
 const labels = {
@@ -18,11 +18,31 @@ const labels = {
 
 type Filter = "all" | "unpaid" | "instructions" | "contact" | "confirmed";
 
+const telegramTypeLabels: Record<TelegramMessageType, string> = {
+  announcement: "Объявление",
+  schedule: "Изменение программы",
+  payment: "Об оплате",
+  custom: "Свободный текст",
+};
+
+function messageTemplate(type: TelegramMessageType, participant: Participant) {
+  const greeting = `Привет, ${participant.name}! 👋`;
+  if (type === "announcement") return `${greeting}\n\nВажное объявление по мастер-классу:\n\n`;
+  if (type === "schedule") return `${greeting}\n\nЕсть изменение по мастер-классу:\n\n`;
+  if (type === "payment") return `${greeting}\n\nНапоминаем об оплате участия в мастер-классе.\n\n`;
+  return `${greeting}\n\n`;
+}
+
 function ParticipantCard({ participant }: { participant: Participant }) {
   const [draft, setDraft] = useState(participant);
   const [saved, setSaved] = useState(participant);
   const [state, setState] = useState<"idle" | "saving" | "saved" | "error">("idle");
   const [message, setMessage] = useState("");
+  const [telegramOpen, setTelegramOpen] = useState(false);
+  const [telegramType, setTelegramType] = useState<TelegramMessageType>("announcement");
+  const [telegramText, setTelegramText] = useState("");
+  const [telegramState, setTelegramState] = useState<"idle" | "sending" | "sent" | "error">("idle");
+  const [telegramError, setTelegramError] = useState("");
   const isDirty = JSON.stringify(draft) !== JSON.stringify(saved);
 
   function update<K extends keyof Participant>(key: K, value: Participant[K]) {
@@ -64,6 +84,38 @@ function ParticipantCard({ participant }: { participant: Participant }) {
     ? `https://t.me/${draft.telegram.replace(/^@/, "")}`
     : null;
 
+  function chooseTelegramTemplate(type: TelegramMessageType) {
+    setTelegramType(type);
+    setTelegramText(messageTemplate(type, draft));
+    setTelegramState("idle");
+    setTelegramError("");
+  }
+
+  async function sendTelegram() {
+    const text = telegramText.trim();
+    if (!text || !window.confirm(`Отправить сообщение участнику ${draft.name}?`)) return;
+
+    setTelegramState("sending");
+    setTelegramError("");
+    const response = await fetch(`/api/crm/participants/${participant.id}/telegram`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ messageType: telegramType, text }),
+    });
+    const result = (await response.json()) as { message?: string; sentAt?: string };
+    if (!response.ok) {
+      setTelegramState("error");
+      setTelegramError(result.message ?? "Не удалось отправить сообщение.");
+      if (response.status === 401) window.location.assign("/crm/login");
+      return;
+    }
+
+    const sentAt = result.sentAt ?? new Date().toISOString();
+    setDraft((current) => ({ ...current, last_telegram_sent_at: sentAt, last_telegram_message_type: telegramType }));
+    setSaved((current) => ({ ...current, last_telegram_sent_at: sentAt, last_telegram_message_type: telegramType }));
+    setTelegramState("sent");
+  }
+
   return (
     <article className={styles.participantCard}>
       <header className={styles.cardHeader}>
@@ -94,6 +146,48 @@ function ParticipantCard({ participant }: { participant: Participant }) {
         <label><span>Следующее действие</span><input value={draft.next_action} maxLength={500} placeholder="Например: напомнить об оплате 10 августа" onChange={(e) => update("next_action", e.target.value)} /></label>
         <label><span>Внутренние заметки</span><textarea value={draft.notes} maxLength={5000} placeholder="Пожелания, договорённости, важный контекст…" onChange={(e) => update("notes", e.target.value)} /></label>
       </div>
+
+      <section className={styles.telegramSection}>
+        <div className={styles.telegramSectionHeader}>
+          <div>
+            <span><MessageSquareText size={15} /> Telegram-сообщение</span>
+            <small>
+              {draft.last_telegram_sent_at
+                ? `Последнее отправлено ${new Intl.DateTimeFormat("ru-RU", { dateStyle: "medium", timeStyle: "short", timeZone: "Asia/Bishkek" }).format(new Date(draft.last_telegram_sent_at))}`
+                : draft.telegram_chat_id ? "Сообщений из CRM ещё не было" : "Участник ещё не запустил бота"}
+            </small>
+          </div>
+          <button type="button" onClick={() => setTelegramOpen((open) => !open)} disabled={!draft.telegram_chat_id}>
+            <Send size={14} /> {telegramOpen ? "Закрыть" : "Написать"}
+          </button>
+        </div>
+
+        {telegramOpen && draft.telegram_chat_id ? (
+          <div className={styles.telegramComposer}>
+            <div className={styles.templateButtons}>
+              <button type="button" className={telegramType === "announcement" ? styles.activeTemplate : ""} onClick={() => chooseTelegramTemplate("announcement")}><Megaphone size={14} /> Объявление</button>
+              <button type="button" className={telegramType === "schedule" ? styles.activeTemplate : ""} onClick={() => chooseTelegramTemplate("schedule")}><CalendarClock size={14} /> Изменение</button>
+              <button type="button" className={telegramType === "payment" ? styles.activeTemplate : ""} onClick={() => chooseTelegramTemplate("payment")}><CreditCard size={14} /> Оплата</button>
+              <button type="button" className={telegramType === "custom" ? styles.activeTemplate : ""} onClick={() => chooseTelegramTemplate("custom")}><MessageCircle size={14} /> Свой текст</button>
+            </div>
+            <label>
+              <span>{telegramTypeLabels[telegramType]}</span>
+              <textarea value={telegramText} maxLength={4000} onChange={(event) => { setTelegramText(event.target.value); setTelegramState("idle"); }} placeholder="Введите сообщение…" autoFocus />
+              <small>{telegramText.length} / 4000</small>
+            </label>
+            <div className={styles.telegramActions}>
+              <p className={telegramState === "error" ? styles.saveError : ""}>
+                {telegramState === "sent" ? <><Check size={14} /> Доставлено Telegram</> : null}
+                {telegramState === "error" ? <><CircleAlert size={14} /> {telegramError}</> : null}
+              </p>
+              <button type="button" onClick={sendTelegram} disabled={!telegramText.trim() || telegramState === "sending"}>
+                {telegramState === "sending" ? <LoaderCircle className={styles.spin} size={15} /> : <Send size={15} />}
+                {telegramState === "sending" ? "Отправляем…" : "Отправить в Telegram"}
+              </button>
+            </div>
+          </div>
+        ) : null}
+      </section>
 
       <footer className={styles.cardFooter}>
         <p className={state === "error" ? styles.saveError : ""}>

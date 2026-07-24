@@ -26,7 +26,9 @@ alter table public.workshop_registrations
   add column if not exists attendance_status text not null default 'pending',
   add column if not exists next_action text not null default '',
   add column if not exists notes text not null default '',
-  add column if not exists updated_at timestamptz not null default now();
+  add column if not exists updated_at timestamptz not null default now(),
+  add column if not exists last_telegram_sent_at timestamptz,
+  add column if not exists last_telegram_message_type text;
 
 alter table public.workshop_registrations
   drop constraint if exists workshop_registrations_payment_status_check,
@@ -46,6 +48,13 @@ alter table public.workshop_registrations
     check (contact_status in ('not_contacted', 'contacted', 'replied')),
   add constraint workshop_registrations_attendance_status_check
     check (attendance_status in ('pending', 'attended', 'no_show'));
+
+alter table public.workshop_registrations
+  drop constraint if exists workshop_registrations_last_telegram_message_type_check;
+
+alter table public.workshop_registrations
+  add constraint workshop_registrations_last_telegram_message_type_check
+  check (last_telegram_message_type is null or last_telegram_message_type in ('announcement', 'schedule', 'payment', 'custom'));
 
 alter table public.workshop_registrations
   drop constraint if exists workshop_registrations_status_check;
@@ -121,6 +130,23 @@ create unique index if not exists workshop_registrations_telegram_start_token_id
   where telegram_start_token_hash is not null;
 
 alter table public.workshop_registrations enable row level security;
+
+create table if not exists public.crm_telegram_messages (
+  id uuid primary key default gen_random_uuid(),
+  created_at timestamptz not null default now(),
+  participant_id uuid not null references public.workshop_registrations(id) on delete cascade,
+  message_type text not null check (message_type in ('announcement', 'schedule', 'payment', 'custom')),
+  body text not null check (char_length(body) between 1 and 4096),
+  delivery_status text not null default 'pending' check (delivery_status in ('pending', 'sent', 'failed')),
+  telegram_message_id bigint,
+  delivered_at timestamptz,
+  error_message text
+);
+
+alter table public.crm_telegram_messages enable row level security;
+
+create index if not exists crm_telegram_messages_participant_created_at_idx
+  on public.crm_telegram_messages (participant_id, created_at desc);
 
 -- The website writes through a route handler using the service role.
 -- No public read/write policies are intentionally created.

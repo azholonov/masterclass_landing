@@ -4,6 +4,11 @@ type SendMessageOptions = {
   parseMode?: "HTML";
 };
 
+type TelegramSendMessageResponse = {
+  ok?: boolean;
+  result?: { message_id?: number };
+};
+
 function getBotToken() {
   return process.env.TELEGRAM_BOT_TOKEN;
 }
@@ -38,6 +43,13 @@ export async function sendTelegramMessage(
     const body = await response.text();
     throw new Error(`Telegram sendMessage failed (${response.status}): ${body.slice(0, 300)}`);
   }
+
+  const data = (await response.json()) as TelegramSendMessageResponse;
+  if (!data.ok || typeof data.result?.message_id !== "number") {
+    throw new Error("Telegram sendMessage returned an invalid response");
+  }
+
+  return { messageId: data.result.message_id };
 }
 
 export async function notifyAdminAboutRegistration(input: {

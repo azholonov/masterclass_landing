@@ -113,3 +113,9 @@
 - [x] Build the searchable participant dashboard and protected update API.
 - [ ] Apply the CRM schema to Supabase and configure Vercel secrets.
 - [ ] Redeploy and smoke-test the production CRM.
+
+## Phase 22 — CRM Telegram Messaging
+- [x] Add authenticated one-to-one Telegram messages with reusable templates.
+- [x] Log pending, delivered, and failed message attempts for auditability.
+- [x] Show Telegram availability and last-send state in the participant CRM.
+- [ ] Apply the messaging schema and test delivery with the production bot.

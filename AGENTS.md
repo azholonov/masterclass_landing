@@ -2,7 +2,7 @@
 
 ## Summary
 - Russian-language landing page for workshop registration.
-- Current phase: Phase 21 — private participant CRM built; deployment pending.
+- Current phase: Phase 22 — CRM Telegram messaging built; deployment pending.
 - Workshop: mobile vibe coding.
 
 ## Key Paths

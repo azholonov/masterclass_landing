@@ -45,6 +45,27 @@
 .notesGrid { display: grid; grid-template-columns: .8fr 1.2fr; gap: 10px; padding: 16px 22px 0; }
 .notesGrid input { height: 44px; padding: 0 11px; font-size: 11px; }
 .notesGrid textarea { display: block; min-height: 75px; padding: 11px; resize: vertical; font-size: 11px; line-height: 1.45; }
+.telegramSection { margin: 17px 22px 0; border: 1px solid #293544; border-radius: 13px; background: #0b111a; }
+.telegramSectionHeader { display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 13px 14px; }
+.telegramSectionHeader > div > span { display: flex; align-items: center; gap: 7px; color: #d9e3ef; font-size: 11px; font-weight: 900; }
+.telegramSectionHeader small { display: block; margin-top: 5px; color: #6f7c8e; font-size: 9px; }
+.telegramSectionHeader > button, .templateButtons button { display: inline-flex; align-items: center; justify-content: center; gap: 6px; border: 1px solid #334052; border-radius: 8px; color: #b9c5d4; background: #151d28; cursor: pointer; }
+.telegramSectionHeader > button { min-height: 34px; padding: 0 11px; font-size: 10px; font-weight: 800; }
+.telegramSectionHeader > button:disabled { opacity: .38; cursor: default; }
+.telegramComposer { padding: 14px; border-top: 1px solid #293544; }
+.templateButtons { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 13px; }
+.templateButtons button { min-height: 32px; padding: 0 9px; font-size: 9px; font-weight: 800; }
+.templateButtons button.activeTemplate { color: #111; border-color: #c9ff27; background: #c9ff27; }
+.telegramComposer label { display: block; }
+.telegramComposer label > span { display: block; margin-bottom: 7px; color: #7e8999; font-size: 9px; font-weight: 900; text-transform: uppercase; letter-spacing: .08em; }
+.telegramComposer textarea { display: block; width: 100%; min-height: 135px; padding: 12px; border: 1px solid #334052; border-radius: 10px; outline: 0; resize: vertical; color: #eef2f7; background: #080d14; font: inherit; font-size: 12px; line-height: 1.55; }
+.telegramComposer textarea:focus { border-color: #7651e6; box-shadow: 0 0 0 3px rgba(118,81,230,.18); }
+.telegramComposer label > small { display: block; margin-top: 5px; color: #657183; font-size: 9px; text-align: right; }
+.telegramActions { display: flex; align-items: center; justify-content: flex-end; gap: 14px; margin-top: 10px; }
+.telegramActions p { display: flex; align-items: center; gap: 5px; margin: 0; color: #98c97a; font-size: 10px; }
+.telegramActions p.saveError { color: #ff9e94; }
+.telegramActions > button { display: inline-flex; align-items: center; justify-content: center; gap: 7px; min-height: 40px; padding: 0 13px; border: 0; border-radius: 9px; color: #10140a; background: #c9ff27; font-size: 10px; font-weight: 900; cursor: pointer; }
+.telegramActions > button:disabled { opacity: .4; cursor: default; }
 .cardFooter { display: flex; align-items: center; justify-content: flex-end; gap: 15px; padding: 14px 22px 19px; }
 .cardFooter p { display: flex; align-items: center; gap: 5px; margin: 0; color: #98c97a; font-size: 10px; }
 .cardFooter p.saveError { color: #ff9e94; }
@@ -85,6 +106,10 @@
   .contactLinks { justify-content: flex-start; margin-top: 13px; }
   .fieldsGrid { grid-template-columns: 1fr 1fr; padding: 17px 17px 0; }
   .notesGrid { grid-template-columns: 1fr; padding: 14px 17px 0; }
+  .telegramSection { margin-inline: 17px; }
+  .telegramSectionHeader { align-items: flex-start; }
+  .telegramActions { align-items: stretch; flex-direction: column; }
+  .telegramActions > button { width: 100%; }
   .cardFooter { padding-inline: 17px; }
   .loginForm { padding: 25px; }
 }
