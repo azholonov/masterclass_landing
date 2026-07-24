@@ -25,6 +25,9 @@ export async function sendWelcomeEmail(input: {
   const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: { user, pass },
+    connectionTimeout: 10_000,
+    greetingTimeout: 10_000,
+    socketTimeout: 15_000,
   });
 
   await transporter.sendMail({

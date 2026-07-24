@@ -23,12 +23,17 @@ Import the repository in Vercel and add these environment variables:
 - `NEXT_PUBLIC_TELEGRAM_BOT_USERNAME`
 - `GMAIL_USER` (`soloapps.dev@gmail.com`)
 - `GMAIL_APP_PASSWORD` (a Google App Password, not the account password)
+- `NEXT_PUBLIC_TURNSTILE_SITE_KEY`
+- `TURNSTILE_SECRET_KEY`
 - `CRM_USERNAME`
 - `CRM_PASSWORD_HASH` (generated locally; never store the plaintext password)
 - `CRM_SESSION_SECRET` (a random value at least 32 characters long)
 
 The service role key is server-only and must never be prefixed with `NEXT_PUBLIC_`.
 The same applies to all `CRM_` variables. The private dashboard is available at `/crm`.
+
+Create a Cloudflare Turnstile widget for the production hostname and add its site key
+and secret key to Vercel. Registration fails closed when either Turnstile key is missing.
 
 Generate a session secret locally with:
 

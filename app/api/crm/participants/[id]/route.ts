@@ -8,6 +8,7 @@ import {
   registrationStatuses,
 } from "@/lib/crm";
 import { createSupabaseAdmin } from "@/lib/supabase";
+import { readJsonBody } from "@/lib/request-security";
 
 type UpdatePayload = {
   status?: unknown;
@@ -39,12 +40,14 @@ export async function PATCH(request: NextRequest, context: { params: Promise<{ i
     return NextResponse.json({ message: "Некорректный ID." }, { status: 400 });
   }
 
-  let payload: UpdatePayload;
-  try {
-    payload = (await request.json()) as UpdatePayload;
-  } catch {
-    return NextResponse.json({ message: "Некорректные данные." }, { status: 400 });
+  const body = await readJsonBody<UpdatePayload>(request, 8 * 1_024);
+  if (!body.ok) {
+    return NextResponse.json(
+      { message: body.reason === "too_large" ? "Данные слишком большие." : "Некорректные данные." },
+      { status: body.reason === "too_large" ? 413 : 400 },
+    );
   }
+  const payload = body.value;
 
   if (
     !isOneOf(payload.status, registrationStatuses) ||

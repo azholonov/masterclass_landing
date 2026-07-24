@@ -63,6 +63,84 @@ alter table public.workshop_registrations
   add constraint workshop_registrations_status_check
   check (status in ('new', 'confirmed', 'cancelled', 'next_run'));
 
+alter table public.workshop_registrations
+  drop constraint if exists workshop_registrations_telegram_length_check;
+
+alter table public.workshop_registrations
+  add constraint workshop_registrations_telegram_length_check
+  check (telegram is null or char_length(telegram) between 5 and 33) not valid;
+
+create table if not exists public.api_rate_limits (
+  action text not null,
+  key_hash text not null,
+  window_started_at timestamptz not null,
+  request_count integer not null check (request_count > 0),
+  primary key (action, key_hash)
+);
+
+alter table public.api_rate_limits enable row level security;
+
+revoke all on table public.api_rate_limits from public, anon, authenticated;
+grant select, insert, update, delete on table public.api_rate_limits to service_role;
+
+create or replace function public.consume_api_rate_limit(
+  rate_action text,
+  rate_key_hash text,
+  rate_limit integer,
+  rate_window_seconds integer
+)
+returns table(allowed boolean, retry_after integer)
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  current_time timestamptz := clock_timestamp();
+  stored_count integer;
+  stored_window_start timestamptz;
+begin
+  if char_length(rate_action) not between 1 and 80
+    or rate_key_hash !~ '^[0-9a-f]{64}$'
+    or rate_limit not between 1 and 1000
+    or rate_window_seconds not between 1 and 604800 then
+    raise exception 'Invalid rate limit parameters';
+  end if;
+
+  insert into public.api_rate_limits as stored (
+    action, key_hash, window_started_at, request_count
+  ) values (
+    rate_action, rate_key_hash, current_time, 1
+  )
+  on conflict (action, key_hash) do update set
+    request_count = case
+      when stored.window_started_at <= current_time - make_interval(secs => rate_window_seconds)
+        then 1
+      else stored.request_count + 1
+    end,
+    window_started_at = case
+      when stored.window_started_at <= current_time - make_interval(secs => rate_window_seconds)
+        then current_time
+      else stored.window_started_at
+    end
+  returning stored.request_count, stored.window_started_at
+    into stored_count, stored_window_start;
+
+  return query select
+    stored_count <= rate_limit,
+    greatest(
+      1,
+      ceil(extract(epoch from (
+        stored_window_start + make_interval(secs => rate_window_seconds) - current_time
+      )))::integer
+    );
+end;
+$$;
+
+revoke all on function public.consume_api_rate_limit(text, text, integer, integer)
+  from public, anon, authenticated;
+grant execute on function public.consume_api_rate_limit(text, text, integer, integer)
+  to service_role;
+
 create or replace function public.register_workshop_participant(
   participant_name text,
   participant_contact text,
@@ -125,9 +203,79 @@ revoke all on function public.register_workshop_participant(text, text, text, te
 grant execute on function public.register_workshop_participant(text, text, text, text, text, text)
   to service_role;
 
+create or replace function public.register_workshop_participant_secure(
+  participant_name text,
+  participant_contact text,
+  participant_telegram text,
+  participant_workshop text,
+  participant_source text,
+  participant_telegram_token_hash text
+)
+returns jsonb
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  existing_status text;
+  assigned_status text;
+begin
+  if participant_name is null
+    or char_length(participant_name) not between 2 and 120
+    or participant_contact is null
+    or char_length(participant_contact) not between 5 and 200
+    or participant_workshop is null
+    or participant_workshop not in ('vibecoding', 'token-economics')
+    or participant_telegram_token_hash is null
+    or participant_telegram_token_hash !~ '^[0-9a-f]{64}$'
+    or (
+      participant_telegram is not null
+      and char_length(participant_telegram) not between 5 and 33
+    ) then
+    raise exception 'Invalid registration fields';
+  end if;
+
+  -- Prevent concurrent duplicate registrations for the same email and workshop.
+  perform pg_advisory_xact_lock(
+    hashtextextended(lower(participant_contact) || ':' || participant_workshop, 0)
+  );
+
+  select status into existing_status
+  from public.workshop_registrations
+  where workshop = participant_workshop
+    and lower(contact) = lower(participant_contact)
+    and status in ('new', 'confirmed', 'next_run')
+  order by created_at desc
+  limit 1;
+
+  if existing_status is not null then
+    return jsonb_build_object('status', existing_status, 'created', false);
+  end if;
+
+  assigned_status := public.register_workshop_participant(
+    participant_name,
+    participant_contact,
+    participant_telegram,
+    participant_workshop,
+    participant_source,
+    participant_telegram_token_hash
+  );
+
+  return jsonb_build_object('status', assigned_status, 'created', true);
+end;
+$$;
+
+revoke all on function public.register_workshop_participant_secure(text, text, text, text, text, text)
+  from public, anon, authenticated;
+grant execute on function public.register_workshop_participant_secure(text, text, text, text, text, text)
+  to service_role;
+
 create unique index if not exists workshop_registrations_telegram_start_token_idx
   on public.workshop_registrations (telegram_start_token_hash)
   where telegram_start_token_hash is not null;
+
+create index if not exists workshop_registrations_contact_workshop_idx
+  on public.workshop_registrations (lower(contact), workshop);
 
 alter table public.workshop_registrations enable row level security;
 
@@ -144,6 +292,38 @@ create table if not exists public.crm_telegram_messages (
 );
 
 alter table public.crm_telegram_messages enable row level security;
+
+create or replace function public.claim_telegram_registration(
+  participant_token_hash text,
+  participant_chat_id bigint
+)
+returns table(id uuid, name text, workshop text, status text)
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  if participant_token_hash !~ '^[0-9a-f]{64}$'
+    or participant_chat_id is null
+    or participant_chat_id = 0 then
+    raise exception 'Invalid Telegram claim';
+  end if;
+
+  return query
+  update public.workshop_registrations as registration
+  set
+    telegram_chat_id = participant_chat_id,
+    telegram_start_token_hash = null,
+    updated_at = now()
+  where registration.telegram_start_token_hash = participant_token_hash
+  returning registration.id, registration.name, registration.workshop, registration.status;
+end;
+$$;
+
+revoke all on function public.claim_telegram_registration(text, bigint)
+  from public, anon, authenticated;
+grant execute on function public.claim_telegram_registration(text, bigint)
+  to service_role;
 
 create index if not exists crm_telegram_messages_participant_created_at_idx
   on public.crm_telegram_messages (participant_id, created_at desc);

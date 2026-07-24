@@ -2,7 +2,16 @@
 
 import { FormEvent, useState } from "react";
 import { ArrowUpRight, CheckCircle2, LoaderCircle } from "lucide-react";
+import Script from "next/script";
 import { workshops, type WorkshopId } from "@/lib/workshops";
+
+declare global {
+  interface Window {
+    turnstile?: { reset: () => void };
+  }
+}
+
+const turnstileSiteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
 
 type FormState = {
   status: "idle" | "success" | "error";
@@ -42,8 +51,10 @@ export function RegistrationForm({ availability }: RegistrationFormProps) {
       });
 
       if (response.ok) form.reset();
+      else window.turnstile?.reset();
     } catch {
       setState({ status: "error", message: "Ошибка соединения. Попробуйте ещё раз." });
+      window.turnstile?.reset();
     } finally {
       setPending(false);
     }
@@ -74,8 +85,22 @@ export function RegistrationForm({ availability }: RegistrationFormProps) {
         <input name="telegram" type="text" placeholder="@username" />
       </label>
 
+      {turnstileSiteKey ? (
+        <div className="turnstile-wrap">
+          <Script src="https://challenges.cloudflare.com/turnstile/v0/api.js" strategy="afterInteractive" />
+          <div
+            className="cf-turnstile"
+            data-sitekey={turnstileSiteKey}
+            data-action="registration"
+            data-theme="light"
+          />
+        </div>
+      ) : (
+        <p className="turnstile-missing">Регистрация временно недоступна: проверка безопасности не настроена.</p>
+      )}
+
       <div className="form-footer">
-        <button className="button button-primary" type="submit" disabled={pending}>
+        <button className="button button-primary" type="submit" disabled={pending || !turnstileSiteKey}>
           {pending ? <LoaderCircle className="spin" size={19} /> : hasAvailablePlace ? "Забронировать место" : "Записаться на следующий набор"}
           {!pending && <ArrowUpRight size={19} />}
         </button>

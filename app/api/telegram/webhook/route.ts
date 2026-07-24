@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { createSupabaseAdmin } from "@/lib/supabase";
 import { participantWelcomeText, sendTelegramMessage } from "@/lib/telegram";
 import { isWorkshopId } from "@/lib/workshops";
+import { readJsonBody } from "@/lib/request-security";
 
 type TelegramUpdate = {
   message?: {
@@ -19,12 +20,11 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: false }, { status: 401 });
   }
 
-  let update: TelegramUpdate;
-  try {
-    update = (await request.json()) as TelegramUpdate;
-  } catch {
+  const body = await readJsonBody<TelegramUpdate>(request, 64 * 1_024);
+  if (!body.ok) {
     return NextResponse.json({ ok: true });
   }
+  const update = body.value;
 
   const text = update.message?.text?.trim() || "";
   const chatId = update.message?.chat?.id;
@@ -42,9 +42,10 @@ export async function POST(request: Request) {
 
   const tokenHash = createHash("sha256").update(match[1]).digest("hex");
   const { data, error } = await supabase
-    .from("workshop_registrations")
-    .select("id, name, workshop, status")
-    .eq("telegram_start_token_hash", tokenHash)
+    .rpc("claim_telegram_registration", {
+      participant_token_hash: tokenHash,
+      participant_chat_id: chatId,
+    })
     .maybeSingle();
 
   if (error) {
@@ -52,20 +53,22 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: false }, { status: 500 });
   }
 
-  if (!data || !isWorkshopId(data.workshop)) {
+  const registration = data as { name?: unknown; workshop?: unknown; status?: unknown } | null;
+  if (
+    !registration ||
+    typeof registration.name !== "string" ||
+    typeof registration.workshop !== "string" ||
+    !isWorkshopId(registration.workshop)
+  ) {
     await sendTelegramMessage(chatId, "Ссылка недействительна или уже была использована.");
     return NextResponse.json({ ok: true });
   }
 
-  const registrationStatus = data.status === "next_run" ? "next_run" : "new";
-  await sendTelegramMessage(chatId, participantWelcomeText(data.name, data.workshop, registrationStatus));
-
-  const { error: updateError } = await supabase
-    .from("workshop_registrations")
-    .update({ telegram_chat_id: chatId, telegram_start_token_hash: null })
-    .eq("id", data.id);
-
-  if (updateError) console.error("Telegram chat ID update error:", updateError.code);
+  const registrationStatus = registration.status === "next_run" ? "next_run" : "new";
+  await sendTelegramMessage(
+    chatId,
+    participantWelcomeText(registration.name, registration.workshop, registrationStatus),
+  );
 
   return NextResponse.json({ ok: true });
 }

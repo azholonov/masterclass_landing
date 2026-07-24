@@ -119,3 +119,11 @@
 - [x] Log pending, delivered, and failed message attempts for auditability.
 - [x] Show Telegram availability and last-send state in the participant CRM.
 - [ ] Apply the messaging schema and test delivery with the production bot.
+
+## Phase 23 — Security Hardening
+- [x] Add persistent throttling for public registration and CRM login.
+- [x] Deduplicate active registrations and enforce strict request limits.
+- [x] Claim Telegram activation tokens atomically.
+- [x] Add bot verification, browser security headers, and patched dependencies.
+- [x] Validate the production build and dependency audit.
+- [ ] Apply the security schema, configure Turnstile, and redeploy.

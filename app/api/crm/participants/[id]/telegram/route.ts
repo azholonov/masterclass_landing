@@ -3,6 +3,7 @@ import { CRM_SESSION_COOKIE, verifyCrmSession } from "@/lib/crm-auth";
 import { telegramMessageTypes } from "@/lib/crm";
 import { createSupabaseAdmin } from "@/lib/supabase";
 import { sendTelegramMessage } from "@/lib/telegram";
+import { readJsonBody } from "@/lib/request-security";
 
 type MessagePayload = {
   messageType?: unknown;
@@ -24,12 +25,14 @@ export async function POST(request: NextRequest, context: { params: Promise<{ id
     return NextResponse.json({ message: "Некорректный ID." }, { status: 400 });
   }
 
-  let payload: MessagePayload;
-  try {
-    payload = (await request.json()) as MessagePayload;
-  } catch {
-    return NextResponse.json({ message: "Некорректные данные." }, { status: 400 });
+  const body = await readJsonBody<MessagePayload>(request, 8 * 1_024);
+  if (!body.ok) {
+    return NextResponse.json(
+      { message: body.reason === "too_large" ? "Данные слишком большие." : "Некорректные данные." },
+      { status: body.reason === "too_large" ? 413 : 400 },
+    );
   }
+  const payload = body.value;
 
   const text = typeof payload.text === "string" ? payload.text.trim() : "";
   const messageType = typeof payload.messageType === "string" ? payload.messageType : "";

@@ -37,6 +37,7 @@ export async function sendTelegramMessage(
       parse_mode: options.parseMode,
       disable_web_page_preview: true,
     }),
+    signal: AbortSignal.timeout(10_000),
   });
 
   if (!response.ok) {
