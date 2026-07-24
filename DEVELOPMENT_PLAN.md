@@ -127,3 +127,8 @@
 - [x] Add bot verification, browser security headers, and patched dependencies.
 - [x] Validate the production build and dependency audit.
 - [ ] Apply the security schema, configure Turnstile, and redeploy.
+
+## Phase 24 — Registration Form Polish
+- [x] Make the optional Telegram account unmistakable in the form.
+- [x] Show Cloudflare Turnstile in an on-submit verification popup.
+- [x] Validate the production build.

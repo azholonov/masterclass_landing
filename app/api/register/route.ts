@@ -45,7 +45,7 @@ export async function POST(request: Request) {
     !isTelegram
   ) {
     return NextResponse.json(
-      { message: "Проверьте имя, email и Telegram username." },
+      { message: "Проверьте имя, email и формат Telegram username, если он указан." },
       { status: 400 },
     );
   }
