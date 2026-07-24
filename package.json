@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "crm:hash-password": "node scripts/hash-crm-password.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.52.0",

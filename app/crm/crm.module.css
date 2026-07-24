@@ -1,0 +1,90 @@
+.crmPage, .loginPage { min-height: 100vh; color: #f7f8f2; background: #070b12; }
+.crmPage button, .crmPage input, .crmPage select, .crmPage textarea,
+.loginPage button, .loginPage input { font: inherit; }
+.topbar { display: flex; align-items: center; justify-content: space-between; min-height: 72px; padding: 0 max(24px, calc((100vw - 1240px) / 2)); border-bottom: 1px solid #232936; background: rgba(7,11,18,.92); }
+.crmBrand { display: flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 900; letter-spacing: -.02em; }
+.crmBrand > span { display: grid; place-items: center; width: 29px; height: 29px; border-radius: 8px; color: #111; background: #c9ff27; }
+.crmBrand em { color: #8d98aa; font-style: normal; font-weight: 600; }
+.topbar form { margin: 0; }
+.topbar button { display: inline-flex; align-items: center; gap: 7px; padding: 9px 12px; border: 1px solid #303846; border-radius: 9px; color: #c5cad3; background: #111720; cursor: pointer; }
+.crmContainer { width: min(1240px, calc(100% - 40px)); margin: 0 auto; padding: 54px 0 90px; }
+.pageHeading { display: flex; align-items: end; justify-content: space-between; gap: 40px; margin-bottom: 34px; }
+.kicker { margin: 0 0 9px; color: #c9ff27; font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: .13em; }
+.pageHeading h1, .loginForm h1 { margin: 0; color: #fff; font-size: clamp(42px, 6vw, 72px); line-height: .95; letter-spacing: -.06em; text-transform: none; }
+.pageHeading > p { max-width: 350px; margin: 0 0 6px; color: #8e98a8; font-size: 14px; line-height: 1.55; }
+.statsGrid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 26px; }
+.statsGrid > div { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 10px; padding: 18px; border: 1px solid #252d3a; border-radius: 15px; color: #c9ff27; background: #111720; }
+.statsGrid span { color: #8e98a8; font-size: 11px; font-weight: 700; }
+.statsGrid strong { color: #fff; font-size: 25px; }
+.toolbar { display: grid; grid-template-columns: 1fr 220px; gap: 12px; }
+.search { display: flex; align-items: center; gap: 10px; height: 48px; padding: 0 14px; border: 1px solid #303847; border-radius: 12px; color: #7f8998; background: #111720; }
+.search input { flex: 1; min-width: 0; border: 0; outline: 0; color: #fff; background: transparent; }
+.search input::placeholder { color: #687384; }
+.toolbar > select, .fieldsGrid select, .fieldsGrid input, .notesGrid input, .notesGrid textarea { width: 100%; border: 1px solid #303847; border-radius: 10px; outline: 0; color: #e9ecf2; background: #0a1018; }
+.toolbar > select { height: 48px; padding: 0 12px; }
+.toolbar select:focus, .fieldsGrid select:focus, .fieldsGrid input:focus, .notesGrid input:focus, .notesGrid textarea:focus { border-color: #7651e6; box-shadow: 0 0 0 3px rgba(118,81,230,.18); }
+.resultsLine { margin: 16px 2px 10px; color: #657080; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: .08em; }
+.cardsList { display: grid; gap: 14px; }
+.participantCard { overflow: hidden; border: 1px solid #283140; border-radius: 17px; background: #111720; box-shadow: 0 14px 40px rgba(0,0,0,.12); }
+.cardHeader { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; padding: 21px 22px; border-bottom: 1px solid #252d3a; }
+.nameLine { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; }
+.nameLine h2 { margin: 0; color: #fff; font-size: 24px; line-height: 1.1; letter-spacing: -.035em; text-transform: none; }
+.cardHeader p { margin: 7px 0 0; color: #737e8e; font-size: 11px; }
+.statusPill { padding: 5px 8px; border-radius: 999px; font-size: 9px; font-weight: 900; text-transform: uppercase; letter-spacing: .05em; }
+.new { color: #bcecff; background: #173442; }
+.confirmed { color: #d9ff68; background: #2c3919; }
+.cancelled { color: #ffb8b1; background: #43221f; }
+.next_run { color: #d7c9ff; background: #302650; }
+.contactLinks { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: 7px; max-width: 620px; }
+.contactLinks a, .contactLinks span { display: inline-flex; align-items: center; gap: 6px; padding: 7px 9px; border: 1px solid #303847; border-radius: 8px; color: #aeb7c4; font-size: 10px; }
+.contactLinks a:hover { color: #c9ff27; border-color: #536226; }
+.contactLinks span { color: #98c97a; }
+.fieldsGrid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; padding: 20px 22px 0; }
+.fieldsGrid label > span, .notesGrid label > span, .loginForm label > span { display: block; margin-bottom: 7px; color: #7e8999; font-size: 9px; font-weight: 900; text-transform: uppercase; letter-spacing: .08em; }
+.fieldsGrid select, .fieldsGrid input { height: 42px; padding: 0 10px; font-size: 11px; }
+.notesGrid { display: grid; grid-template-columns: .8fr 1.2fr; gap: 10px; padding: 16px 22px 0; }
+.notesGrid input { height: 44px; padding: 0 11px; font-size: 11px; }
+.notesGrid textarea { display: block; min-height: 75px; padding: 11px; resize: vertical; font-size: 11px; line-height: 1.45; }
+.cardFooter { display: flex; align-items: center; justify-content: flex-end; gap: 15px; padding: 14px 22px 19px; }
+.cardFooter p { display: flex; align-items: center; gap: 5px; margin: 0; color: #98c97a; font-size: 10px; }
+.cardFooter p.saveError { color: #ff9e94; }
+.saveButton, .primaryButton { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 40px; padding: 0 14px; border: 0; border-radius: 10px; color: #10140a; background: #c9ff27; font-weight: 900; cursor: pointer; }
+.saveButton { min-width: 128px; font-size: 11px; }
+.saveButton:disabled, .primaryButton:disabled { opacity: .42; cursor: default; }
+.alert, .emptyState { padding: 22px; border: 1px solid #5e4430; border-radius: 13px; color: #ffcc9d; background: #2e2119; font-size: 13px; line-height: 1.5; }
+.emptyState { color: #8e98a8; border-color: #283140; background: #111720; text-align: center; }
+.loginPage { display: grid; place-items: center; padding: 65px 20px; }
+.backLink { position: absolute; top: 25px; left: 28px; color: #8993a2; font-size: 12px; }
+.loginForm { display: grid; gap: 18px; width: min(430px, 100%); padding: 34px; border: 1px solid #293241; border-radius: 22px; background: #111720; box-shadow: 0 30px 80px rgba(0,0,0,.3); }
+.loginIcon { display: grid; place-items: center; width: 48px; height: 48px; border-radius: 13px; color: #111; background: #c9ff27; }
+.loginForm h1 { font-size: 45px; }
+.loginIntro { margin: 10px 0 0; color: #8993a2; font-size: 13px; line-height: 1.5; }
+.loginForm input { width: 100%; height: 48px; padding: 0 13px; border: 1px solid #303847; border-radius: 10px; outline: 0; color: #fff; background: #0a1018; }
+.loginForm input:focus { border-color: #7651e6; box-shadow: 0 0 0 3px rgba(118,81,230,.18); }
+.primaryButton { min-height: 48px; margin-top: 3px; }
+.errorMessage { margin: -5px 0 0; padding: 10px 11px; border-radius: 8px; color: #ffb0a8; background: #3b201e; font-size: 11px; }
+.spin { animation: crmSpin .8s linear infinite; }
+@keyframes crmSpin { to { transform: rotate(360deg); } }
+
+@media (max-width: 1000px) {
+  .statsGrid { grid-template-columns: repeat(2, 1fr); }
+  .fieldsGrid { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 680px) {
+  .crmContainer { width: min(100% - 24px, 1240px); padding-top: 36px; }
+  .topbar { min-height: 62px; padding: 0 12px; }
+  .crmBrand em { display: none; }
+  .topbar button { font-size: 0; }
+  .pageHeading { display: block; }
+  .pageHeading > p { margin-top: 14px; }
+  .statsGrid { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .statsGrid > div { grid-template-columns: auto 1fr; padding: 13px; }
+  .statsGrid strong { grid-column: 2; font-size: 21px; }
+  .toolbar { grid-template-columns: 1fr; }
+  .cardHeader { display: block; padding: 17px; }
+  .contactLinks { justify-content: flex-start; margin-top: 13px; }
+  .fieldsGrid { grid-template-columns: 1fr 1fr; padding: 17px 17px 0; }
+  .notesGrid { grid-template-columns: 1fr; padding: 14px 17px 0; }
+  .cardFooter { padding-inline: 17px; }
+  .loginForm { padding: 25px; }
+}

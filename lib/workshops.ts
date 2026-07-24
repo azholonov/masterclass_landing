@@ -4,6 +4,7 @@ export const workshops = {
     date: "15 августа 2026",
     format: "офлайн в Бишкеке",
     capacity: 12,
+    price: "5 000 сом",
   },
   "token-economics": {
     title: "Экономика токенов",

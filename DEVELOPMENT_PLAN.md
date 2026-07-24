@@ -96,3 +96,20 @@
 - [x] Add the supplied expert portrait to the public artwork.
 - [x] Replace the placeholder monogram with the portrait.
 - [x] Validate the production build.
+
+## Phase 19 — Workshop Price
+- [x] Add the 5,000 KGS price to the workshop card.
+- [x] Repeat the price at the registration decision point.
+- [x] Validate the production build.
+
+## Phase 20 — Participant Preparation
+- [x] Explain the post-registration preparation instructions.
+- [x] Include an optional one-hour early setup session with the expert.
+- [x] Validate the production build and responsive layout.
+
+## Phase 21 — Private Participant CRM
+- [x] Add salted scrypt password authentication with a signed secure session.
+- [x] Add payment, instructions, contact, attendance, and follow-up fields.
+- [x] Build the searchable participant dashboard and protected update API.
+- [ ] Apply the CRM schema to Supabase and configure Vercel secrets.
+- [ ] Redeploy and smoke-test the production CRM.

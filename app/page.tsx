@@ -188,6 +188,10 @@ export default async function Home() {
                 <time dateTime={workshop.dateTime}><CalendarDays size={16} /> {workshop.date}</time>
                 <h3>{workshop.title}</h3>
                 <p className="card-subtitle">{workshop.subtitle}</p>
+                <div className="workshop-price">
+                  <span>Стоимость участия</span>
+                  <strong>{workshopDetails.vibecoding.price}</strong>
+                </div>
                 <p className="card-description">{workshop.description}</p>
                 <ul>
                   {workshop.features.map((feature) => <li key={feature}><Check size={15} />{feature}</li>)}
@@ -248,9 +252,19 @@ export default async function Home() {
             <li><span>02</span><div><strong>Собираем вместе</strong><p>Ведущий показывает, вы повторяете и сразу адаптируете под свою идею.</p></div></li>
             <li><span>03</span><div><strong>Уходим с результатом</strong><p>Рабочий прототип приложения — плюс материалы после встречи.</p></div></li>
           </ol>
-          <div className="format-note">
-            <MapPin size={21} />
-            <p><strong>Офлайн в Бишкеке</strong>Точную локацию встречи пришлём после регистрации.</p>
+          <div className="format-support">
+            <div className="prep-note">
+              <div className="prep-note-icon"><Wrench size={21} /></div>
+              <div>
+                <span>Подготовка входит в стоимость</span>
+                <h3>Настройтесь сами или приходите на час раньше</h3>
+                <p>После регистрации пришлём пошаговую инструкцию. Если удобнее подготовиться вместе, эксперт поможет установить и настроить всё необходимое за час до начала.</p>
+              </div>
+            </div>
+            <div className="format-note">
+              <MapPin size={21} />
+              <p><strong>Офлайн в Бишкеке</strong>Точную локацию и инструкцию по подготовке пришлём после регистрации.</p>
+            </div>
           </div>
         </div>
       </section>
@@ -296,6 +310,7 @@ export default async function Home() {
           <div className="registration-copy">
             <div className="registration-tag"><Sparkles size={15} /> Остался один шаг</div>
             <h2>ЗАЙМИ<br /><span>СВОЁ МЕСТО.</span></h2>
+            <div className="registration-price"><strong>{workshopDetails.vibecoding.price}</strong><span>за участие</span></div>
             <p>Оставь контакт, чтобы забронировать место. Пришлём все детали — без спама и длинных цепочек писем.</p>
             <a href="mailto:soloapps.dev@gmail.com">Есть вопрос? Напиши нам <ArrowRight size={17} /></a>
           </div>

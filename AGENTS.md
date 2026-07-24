@@ -2,7 +2,7 @@
 
 ## Summary
 - Russian-language landing page for workshop registration.
-- Current phase: Phase 15 — vibecoding-only landing complete.
+- Current phase: Phase 21 — private participant CRM built; deployment pending.
 - Workshop: mobile vibe coding.
 
 ## Key Paths

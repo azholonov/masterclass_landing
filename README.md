@@ -23,8 +23,26 @@ Import the repository in Vercel and add these environment variables:
 - `NEXT_PUBLIC_TELEGRAM_BOT_USERNAME`
 - `GMAIL_USER` (`soloapps.dev@gmail.com`)
 - `GMAIL_APP_PASSWORD` (a Google App Password, not the account password)
+- `CRM_USERNAME`
+- `CRM_PASSWORD_HASH` (generated locally; never store the plaintext password)
+- `CRM_SESSION_SECRET` (a random value at least 32 characters long)
 
 The service role key is server-only and must never be prefixed with `NEXT_PUBLIC_`.
+The same applies to all `CRM_` variables. The private dashboard is available at `/crm`.
+
+Generate a session secret locally with:
+
+```bash
+openssl rand -base64 48
+```
+
+Generate the password hash locally. The password is hidden while you type it:
+
+```bash
+npm run crm:hash-password
+```
+
+Copy only the resulting `scrypt$...` value into `CRM_PASSWORD_HASH` in Vercel.
 
 ## Telegram setup
 

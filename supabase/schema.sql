@@ -15,7 +15,37 @@ create table if not exists public.workshop_registrations (
 
 alter table public.workshop_registrations
   add column if not exists telegram_chat_id bigint,
-  add column if not exists telegram_start_token_hash text;
+  add column if not exists telegram_start_token_hash text,
+  add column if not exists payment_status text not null default 'unpaid',
+  add column if not exists payment_amount integer not null default 0,
+  add column if not exists paid_at timestamptz,
+  add column if not exists instructions_status text not null default 'not_sent',
+  add column if not exists instructions_sent_at timestamptz,
+  add column if not exists contact_status text not null default 'not_contacted',
+  add column if not exists last_contacted_at timestamptz,
+  add column if not exists attendance_status text not null default 'pending',
+  add column if not exists next_action text not null default '',
+  add column if not exists notes text not null default '',
+  add column if not exists updated_at timestamptz not null default now();
+
+alter table public.workshop_registrations
+  drop constraint if exists workshop_registrations_payment_status_check,
+  drop constraint if exists workshop_registrations_payment_amount_check,
+  drop constraint if exists workshop_registrations_instructions_status_check,
+  drop constraint if exists workshop_registrations_contact_status_check,
+  drop constraint if exists workshop_registrations_attendance_status_check;
+
+alter table public.workshop_registrations
+  add constraint workshop_registrations_payment_status_check
+    check (payment_status in ('unpaid', 'partial', 'paid', 'refunded')),
+  add constraint workshop_registrations_payment_amount_check
+    check (payment_amount >= 0),
+  add constraint workshop_registrations_instructions_status_check
+    check (instructions_status in ('not_sent', 'sent', 'acknowledged')),
+  add constraint workshop_registrations_contact_status_check
+    check (contact_status in ('not_contacted', 'contacted', 'replied')),
+  add constraint workshop_registrations_attendance_status_check
+    check (attendance_status in ('pending', 'attended', 'no_show'));
 
 alter table public.workshop_registrations
   drop constraint if exists workshop_registrations_status_check;

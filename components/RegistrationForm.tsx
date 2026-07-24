@@ -2,7 +2,7 @@
 
 import { FormEvent, useState } from "react";
 import { ArrowUpRight, CheckCircle2, LoaderCircle } from "lucide-react";
-import type { WorkshopId } from "@/lib/workshops";
+import { workshops, type WorkshopId } from "@/lib/workshops";
 
 type FormState = {
   status: "idle" | "success" | "error";
@@ -52,6 +52,11 @@ export function RegistrationForm({ availability }: RegistrationFormProps) {
   return (
     <form className="registration-form" onSubmit={handleSubmit}>
       <input type="hidden" name="workshop" value="vibecoding" />
+
+      <div className="form-price">
+        <span>Мастер-класс</span>
+        <strong>{workshops.vibecoding.price}</strong>
+      </div>
 
       <div className="field-grid">
         <label>
