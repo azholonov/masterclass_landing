@@ -95,7 +95,7 @@ security definer
 set search_path = public
 as $$
 declare
-  current_time timestamptz := clock_timestamp();
+  now_at timestamptz := clock_timestamp();
   stored_count integer;
   stored_window_start timestamptz;
 begin
@@ -109,17 +109,17 @@ begin
   insert into public.api_rate_limits as stored (
     action, key_hash, window_started_at, request_count
   ) values (
-    rate_action, rate_key_hash, current_time, 1
+    rate_action, rate_key_hash, now_at, 1
   )
   on conflict (action, key_hash) do update set
     request_count = case
-      when stored.window_started_at <= current_time - make_interval(secs => rate_window_seconds)
+      when stored.window_started_at <= now_at - make_interval(secs => rate_window_seconds)
         then 1
       else stored.request_count + 1
     end,
     window_started_at = case
-      when stored.window_started_at <= current_time - make_interval(secs => rate_window_seconds)
-        then current_time
+      when stored.window_started_at <= now_at - make_interval(secs => rate_window_seconds)
+        then now_at
       else stored.window_started_at
     end
   returning stored.request_count, stored.window_started_at
@@ -130,7 +130,7 @@ begin
     greatest(
       1,
       ceil(extract(epoch from (
-        stored_window_start + make_interval(secs => rate_window_seconds) - current_time
+        stored_window_start + make_interval(secs => rate_window_seconds) - now_at
       )))::integer
     );
 end;

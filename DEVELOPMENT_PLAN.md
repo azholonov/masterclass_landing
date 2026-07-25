@@ -132,3 +132,8 @@
 - [x] Make the optional Telegram account unmistakable in the form.
 - [x] Show Cloudflare Turnstile in an on-submit verification popup.
 - [x] Validate the production build.
+
+## Phase 25 — Registration Availability Recovery
+- [ ] Fix the PostgreSQL type collision in the persistent rate limiter.
+- [ ] Apply the corrected function to the production Supabase project.
+- [ ] Re-test registration through Turnstile and validate the production build.
