@@ -8,7 +8,7 @@ create table if not exists public.workshop_registrations (
   telegram text,
   telegram_chat_id bigint,
   telegram_start_token_hash text,
-  workshop text not null check (workshop in ('vibecoding', 'token-economics')),
+  workshop text not null check (workshop in ('vibecoding-kg', 'vibecoding', 'token-economics')),
   source text not null default 'landing',
   status text not null default 'new' check (status in ('new', 'confirmed', 'cancelled'))
 );
@@ -62,6 +62,13 @@ alter table public.workshop_registrations
 alter table public.workshop_registrations
   add constraint workshop_registrations_status_check
   check (status in ('new', 'confirmed', 'cancelled', 'next_run'));
+
+alter table public.workshop_registrations
+  drop constraint if exists workshop_registrations_workshop_check;
+
+alter table public.workshop_registrations
+  add constraint workshop_registrations_workshop_check
+  check (workshop in ('vibecoding-kg', 'vibecoding', 'token-economics'));
 
 alter table public.workshop_registrations
   drop constraint if exists workshop_registrations_telegram_length_check;
@@ -160,6 +167,7 @@ declare
   assigned_status text;
 begin
   workshop_capacity := case participant_workshop
+    when 'vibecoding-kg' then 12
     when 'vibecoding' then 12
     when 'token-economics' then 16
     else null
@@ -225,7 +233,7 @@ begin
     or participant_contact is null
     or char_length(participant_contact) not between 5 and 200
     or participant_workshop is null
-    or participant_workshop not in ('vibecoding', 'token-economics')
+    or participant_workshop not in ('vibecoding-kg', 'vibecoding', 'token-economics')
     or participant_telegram_token_hash is null
     or participant_telegram_token_hash !~ '^[0-9a-f]{64}$'
     or (

@@ -137,3 +137,9 @@
 - [ ] Fix the PostgreSQL type collision in the persistent rate limiter.
 - [ ] Apply the corrected function to the production Supabase project.
 - [ ] Re-test registration through Turnstile and validate the production build.
+
+## Phase 26 — Kyrgyz-language Vibecoding Session
+- [x] Add the Kyrgyz-language session for 14 August 2026.
+- [x] Keep capacity and registration records separate by language and date.
+- [ ] Apply the workshop schema update and redeploy.
+- [x] Validate the production build.

@@ -24,20 +24,42 @@ import { workshops as workshopDetails, type WorkshopId } from "@/lib/workshops";
 
 export const dynamic = "force-dynamic";
 
-const workshop = {
-  number: "01",
-  date: "15 августа · суббота",
-  dateTime: "2026-08-15",
-  title: "Вайбкодим мобильное приложение",
-  subtitle: "От идеи до первого билда — за один вечер",
-  description:
-    "Соберём рабочий прототип приложения с AI-инструментами. Придумали, написали, запустили — без двухчасовых лекций.",
-  features: ["Выберем идею и MVP", "Соберём интерфейс", "Запустим на телефоне"],
-  meta: ["2 часа", "офлайн", "до 12 человек"],
-  image: "/art/vibecoding-robot.png",
-  alt: "Робот программирует приложение рядом с цифровым растением",
-  tone: "violet",
-};
+const workshopSessions = [
+  {
+    id: "vibecoding-kg" as const,
+    number: "01",
+    date: "14-август · жума",
+    dateTime: "2026-08-14",
+    language: "Кыргыз тилинде",
+    title: "Вайбкодинг менен мобилдик тиркеме жасайбыз",
+    subtitle: "Идеядан алгачкы билдге чейин — бир кечте",
+    description:
+      "AI куралдары менен тиркеменин иштеген прототибин түзөбүз. Идеяны ойлоп табабыз, чогултабыз жана иштетебиз — узак лекцияларсыз.",
+    features: ["Идеяны жана MVPни аныктайбыз", "Интерфейсти түзөбүз", "Телефондо иштетебиз"],
+    meta: ["2 саат", "офлайн", "12 адамга чейин"],
+    image: "/art/vibecoding-robot.png",
+    alt: "Робот санарип өсүмдүктүн жанында тиркеме программалап жатат",
+    tone: "lime",
+    priceLabel: "Катышуу баасы",
+  },
+  {
+    id: "vibecoding" as const,
+    number: "02",
+    date: "15 августа · суббота",
+    dateTime: "2026-08-15",
+    language: "На русском языке",
+    title: "Вайбкодим мобильное приложение",
+    subtitle: "От идеи до первого билда — за один вечер",
+    description:
+      "Соберём рабочий прототип приложения с AI-инструментами. Придумали, написали, запустили — без двухчасовых лекций.",
+    features: ["Выберем идею и MVP", "Соберём интерфейс", "Запустим на телефоне"],
+    meta: ["2 часа", "офлайн", "до 12 человек"],
+    image: "/art/vibecoding-robot.png",
+    alt: "Робот программирует приложение рядом с цифровым растением",
+    tone: "violet",
+    priceLabel: "Стоимость участия",
+  },
+];
 
 const productStory = [
   {
@@ -89,6 +111,7 @@ const productStory = [
 
 async function getWorkshopAvailability(): Promise<Record<WorkshopId, boolean>> {
   const availability: Record<WorkshopId, boolean> = {
+    "vibecoding-kg": true,
     vibecoding: true,
     "token-economics": false,
   };
@@ -146,9 +169,9 @@ export default async function Home() {
         <div className="hero-shade" />
 
         <div className="hero-content container">
-          <div className="hero-kicker"><span>Бишкек</span><span>15 августа</span><span>2026</span></div>
+          <div className="hero-kicker"><span>Бишкек</span><span>14–15 августа</span><span>2026</span></div>
           <h1>НЕ СМОТРИ.<br /><em>СОЗДАВАЙ.</em></h1>
-          <p>Практический мастер-класс по мобильному вайбкодингу. Сделай своё первое приложение своими руками.</p>
+          <p>Практический мастер-класс по мобильному вайбкодингу на кыргызском и русском языках. Сделай своё первое приложение своими руками.</p>
           <div className="hero-actions">
             <a className="button button-lime" href="#workshops">
               Узнать о мастер-классе <ArrowDownRight size={20} />
@@ -157,8 +180,8 @@ export default async function Home() {
           </div>
         </div>
 
-        <div className="hero-counter" aria-label="Один мастер-класс">
-          <strong>01</strong><span>одна встреча<br />готовый прототип</span>
+        <div className="hero-counter" aria-label="Две встречи">
+          <strong>02</strong><span>два языка<br />готовый прототип</span>
         </div>
         <div className="marquee" aria-hidden="true">
           <div>ПРАКТИКА ✦ ИДЕИ ✦ ТЕХНОЛОГИИ ✦ ПЕРВЫЙ БИЛД ✦ ПРАКТИКА ✦ ИДЕИ ✦ ТЕХНОЛОГИИ ✦</div>
@@ -169,40 +192,43 @@ export default async function Home() {
         <div className="container">
           <div className="section-heading">
             <div>
-              <p className="eyebrow">Ближайшая встреча / 01</p>
+              <p className="eyebrow">Ближайшие встречи / 02</p>
               <h2>ТВОЯ ТОЧКА<br /><span>СТАРТА.</span></h2>
             </div>
             <p>Небольшая группа, живой ведущий и задача, которую ты действительно успеешь закончить.</p>
           </div>
 
           <div className="workshop-grid">
-            <article className={`workshop-card card-${workshop.tone}`}>
-              <div className="workshop-image">
-                <Image src={workshop.image} alt={workshop.alt} fill sizes="(max-width: 760px) 100vw, 760px" />
-                <span className="card-index">/{workshop.number}</span>
-                <a href="#registration" className="card-arrow" aria-label={`Записаться: ${workshop.title}`}>
-                  <ArrowUpRight size={26} />
-                </a>
-              </div>
-              <div className="workshop-content">
-                <time dateTime={workshop.dateTime}><CalendarDays size={16} /> {workshop.date}</time>
-                <h3>{workshop.title}</h3>
-                <p className="card-subtitle">{workshop.subtitle}</p>
-                <div className="workshop-price">
-                  <span>Стоимость участия</span>
-                  <strong>{workshopDetails.vibecoding.price}</strong>
+            {workshopSessions.map((workshop) => (
+              <article className={`workshop-card card-${workshop.tone}`} key={workshop.id}>
+                <div className="workshop-image">
+                  <Image src={workshop.image} alt={workshop.alt} fill sizes="(max-width: 700px) 100vw, 50vw" />
+                  <span className="card-index">/{workshop.number}</span>
+                  <a href="#registration" className="card-arrow" aria-label={`Записаться: ${workshop.title}`}>
+                    <ArrowUpRight size={26} />
+                  </a>
                 </div>
-                <p className="card-description">{workshop.description}</p>
-                <ul>
-                  {workshop.features.map((feature) => <li key={feature}><Check size={15} />{feature}</li>)}
-                </ul>
-                <div className="card-meta">
-                  <span><Clock3 size={15} />{workshop.meta[0]}</span>
-                  <span><Webcam size={15} />{workshop.meta[1]}</span>
-                  <span><UsersRound size={15} />{workshop.meta[2]}</span>
+                <div className="workshop-content">
+                  <time dateTime={workshop.dateTime}><CalendarDays size={16} /> {workshop.date}</time>
+                  <p className="workshop-language">{workshop.language}</p>
+                  <h3>{workshop.title}</h3>
+                  <p className="card-subtitle">{workshop.subtitle}</p>
+                  <div className="workshop-price">
+                    <span>{workshop.priceLabel}</span>
+                    <strong>{workshopDetails[workshop.id].price}</strong>
+                  </div>
+                  <p className="card-description">{workshop.description}</p>
+                  <ul>
+                    {workshop.features.map((feature) => <li key={feature}><Check size={15} />{feature}</li>)}
+                  </ul>
+                  <div className="card-meta">
+                    <span><Clock3 size={15} />{workshop.meta[0]}</span>
+                    <span><Webcam size={15} />{workshop.meta[1]}</span>
+                    <span><UsersRound size={15} />{workshop.meta[2]}</span>
+                  </div>
                 </div>
-              </div>
-            </article>
+              </article>
+            ))}
           </div>
         </div>
       </section>

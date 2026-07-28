@@ -50,7 +50,10 @@ export async function POST(request: Request) {
     );
   }
 
-  if (!isWorkshopId(workshop) || workshop !== "vibecoding") {
+  if (
+    !isWorkshopId(workshop) ||
+    (workshop !== "vibecoding-kg" && workshop !== "vibecoding")
+  ) {
     return NextResponse.json({ message: "Регистрация доступна только на мастер-класс по вайбкодингу." }, { status: 400 });
   }
 

@@ -38,6 +38,7 @@ type RegistrationFormProps = {
 };
 
 export function RegistrationForm({ availability }: RegistrationFormProps) {
+  const [selectedWorkshop, setSelectedWorkshop] = useState<"vibecoding-kg" | "vibecoding">("vibecoding-kg");
   const [state, setState] = useState<FormState>({ status: "idle", message: "" });
   const [pending, setPending] = useState(false);
   const [verificationOpen, setVerificationOpen] = useState(false);
@@ -48,7 +49,7 @@ export function RegistrationForm({ availability }: RegistrationFormProps) {
   const challengeRef = useRef<HTMLDivElement>(null);
   const widgetIdRef = useRef<string | undefined>(undefined);
   const submissionInFlightRef = useRef(false);
-  const hasAvailablePlace = availability.vibecoding;
+  const hasAvailablePlace = availability[selectedWorkshop];
 
   async function submitRegistration(turnstileToken: string) {
     const form = formRef.current;
@@ -144,8 +145,6 @@ export function RegistrationForm({ availability }: RegistrationFormProps) {
 
   return (
     <form ref={formRef} className="registration-form" onSubmit={handleSubmit}>
-      <input type="hidden" name="workshop" value="vibecoding" />
-
       {turnstileSiteKey && (
         <Script
           src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"
@@ -156,8 +155,34 @@ export function RegistrationForm({ availability }: RegistrationFormProps) {
 
       <div className="form-price">
         <span>Мастер-класс</span>
-        <strong>{workshops.vibecoding.price}</strong>
+        <strong>{workshops[selectedWorkshop].price}</strong>
       </div>
+
+      <fieldset>
+        <legend>Выберите язык и дату</legend>
+        <div className="workshop-options">
+          <label>
+            <input
+              type="radio"
+              name="workshop"
+              value="vibecoding-kg"
+              checked={selectedWorkshop === "vibecoding-kg"}
+              onChange={() => setSelectedWorkshop("vibecoding-kg")}
+            />
+            <span>14-август · Кыргыз тилинде{!availability["vibecoding-kg"] && <small>Следующий набор</small>}</span>
+          </label>
+          <label>
+            <input
+              type="radio"
+              name="workshop"
+              value="vibecoding"
+              checked={selectedWorkshop === "vibecoding"}
+              onChange={() => setSelectedWorkshop("vibecoding")}
+            />
+            <span>15 августа · На русском{!availability.vibecoding && <small>Следующий набор</small>}</span>
+          </label>
+        </div>
+      </fieldset>
 
       <div className="field-grid">
         <label>

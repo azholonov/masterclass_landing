@@ -2,7 +2,7 @@
 
 ## Summary
 - Russian-language landing page for workshop registration.
-- Current phase: Phase 23 — security hardening built; deployment pending.
+- Current phase: Phase 26 — Kyrgyz-language session built; deployment pending.
 - Workshop: mobile vibe coding.
 
 ## Key Paths
