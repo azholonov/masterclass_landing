@@ -143,3 +143,8 @@
 - [x] Keep capacity and registration records separate by language and date.
 - [ ] Apply the workshop schema update and redeploy.
 - [x] Validate the production build.
+
+## Phase 27 — Responsive Price Visibility
+- [x] Hide workshop and registration prices on mobile screens.
+- [x] Keep prices visible on tablet and desktop screens.
+- [x] Validate the production build.
