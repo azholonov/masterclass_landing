@@ -148,3 +148,13 @@
 - [x] Hide workshop and registration prices on mobile screens.
 - [x] Keep prices visible on tablet and desktop screens.
 - [x] Validate the production build.
+
+## Phase 28 — Participant Equipment Requirements
+- [x] State the laptop and paid AI subscription requirements on the landing page.
+- [x] Add the laptop and ChatGPT-or-Claude subscription checklist to welcome emails.
+- [x] Validate the production build.
+
+## Phase 29 — Limited Capacity Visibility
+- [x] Replace the small capacity metadata with prominent limited-seat badges.
+- [x] Reinforce the 12-seat limit beside the registration form.
+- [x] Validate the production build.

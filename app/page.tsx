@@ -36,7 +36,8 @@ const workshopSessions = [
     description:
       "AI куралдары менен тиркеменин иштеген прототибин түзөбүз. Идеяны ойлоп табабыз, чогултабыз жана иштетебиз — узак лекцияларсыз.",
     features: ["Идеяны жана MVPни аныктайбыз", "Интерфейсти түзөбүз", "Телефондо иштетебиз"],
-    meta: ["2 саат", "офлайн", "12 адамга чейин"],
+    meta: ["2 саат", "офлайн"],
+    capacityLabel: "Болгону 12 орун",
     image: "/art/vibecoding-robot.png",
     alt: "Робот санарип өсүмдүктүн жанында тиркеме программалап жатат",
     tone: "lime",
@@ -53,7 +54,8 @@ const workshopSessions = [
     description:
       "Соберём рабочий прототип приложения с AI-инструментами. Придумали, написали, запустили — без двухчасовых лекций.",
     features: ["Выберем идею и MVP", "Соберём интерфейс", "Запустим на телефоне"],
-    meta: ["2 часа", "офлайн", "до 12 человек"],
+    meta: ["2 часа", "офлайн"],
+    capacityLabel: "Только 12 мест",
     image: "/art/vibecoding-robot.png",
     alt: "Робот программирует приложение рядом с цифровым растением",
     tone: "violet",
@@ -204,6 +206,7 @@ export default async function Home() {
                 <div className="workshop-image">
                   <Image src={workshop.image} alt={workshop.alt} fill sizes="(max-width: 700px) 100vw, 50vw" />
                   <span className="card-index">/{workshop.number}</span>
+                  <span className="capacity-badge"><UsersRound size={17} />{workshop.capacityLabel}</span>
                   <a href="#registration" className="card-arrow" aria-label={`Записаться: ${workshop.title}`}>
                     <ArrowUpRight size={26} />
                   </a>
@@ -224,7 +227,6 @@ export default async function Home() {
                   <div className="card-meta">
                     <span><Clock3 size={15} />{workshop.meta[0]}</span>
                     <span><Webcam size={15} />{workshop.meta[1]}</span>
-                    <span><UsersRound size={15} />{workshop.meta[2]}</span>
                   </div>
                 </div>
               </article>
@@ -284,7 +286,7 @@ export default async function Home() {
               <div>
                 <span>Подготовка входит в стоимость</span>
                 <h3>Настройтесь сами или приходите на час раньше</h3>
-                <p>После регистрации пришлём пошаговую инструкцию. Если удобнее подготовиться вместе, эксперт поможет установить и настроить всё необходимое за час до начала.</p>
+                <p>Для участия нужны личный ноутбук и активная платная подписка на один AI-инструмент — ChatGPT или Claude. После регистрации пришлём пошаговую инструкцию. Если удобнее подготовиться вместе, эксперт поможет установить и настроить всё необходимое за час до начала.</p>
               </div>
             </div>
             <div className="format-note">
@@ -334,7 +336,7 @@ export default async function Home() {
       <section className="registration section" id="registration">
         <div className="container registration-grid">
           <div className="registration-copy">
-            <div className="registration-tag"><Sparkles size={15} /> Остался один шаг</div>
+            <div className="registration-tag"><UsersRound size={15} /> Только 12 мест на каждом мастер-классе</div>
             <h2>ЗАЙМИ<br /><span>СВОЁ МЕСТО.</span></h2>
             <div className="registration-price"><strong>{workshopDetails.vibecoding.price}</strong><span>за участие</span></div>
             <p>Оставь контакт, чтобы забронировать место. Пришлём все детали — без спама и длинных цепочек писем.</p>

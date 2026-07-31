@@ -44,14 +44,22 @@ export async function sendWelcomeEmail(input: {
       "",
       isNextRun
         ? "Мы сообщим вам первыми, когда назначим новую дату."
-        : "Ближе к встрече мы отправим точное время, адрес или ссылку для подключения.",
+        : "Что понадобится на мастер-классе:",
+      ...(isNextRun
+        ? []
+        : [
+            "- личный ноутбук;",
+            "- активная платная подписка на один AI-инструмент: ChatGPT или Claude.",
+            "",
+            "Ближе к встрече мы отправим точное время, адрес и инструкцию по подготовке.",
+          ]),
     ].join("\n"),
     html: `
       <div style="font-family:Arial,sans-serif;line-height:1.6;color:#171717;max-width:600px">
         <h2>Привет, ${escapeHtml(input.name)}! 👋</h2>
         ${isNextRun
           ? `<p>Все места на мастер-класс <strong>«${escapeHtml(workshop.title)}»</strong> заняты, но мы добавили вас в список на следующий набор.</p><p>Мы сообщим вам первыми, когда назначим новую дату.</p>`
-          : `<p>Вы зарегистрированы на мастер-класс <strong>«${escapeHtml(workshop.title)}»</strong>.</p><p><strong>Дата:</strong> ${escapeHtml(workshop.date)}<br><strong>Формат:</strong> ${escapeHtml(workshop.format)}</p><p>Ближе к встрече мы отправим точное время, адрес или ссылку для подключения.</p><p>До встречи!</p>`}
+          : `<p>Вы зарегистрированы на мастер-класс <strong>«${escapeHtml(workshop.title)}»</strong>.</p><p><strong>Дата:</strong> ${escapeHtml(workshop.date)}<br><strong>Формат:</strong> ${escapeHtml(workshop.format)}</p><p><strong>Что понадобится на мастер-классе:</strong></p><ul><li>личный ноутбук;</li><li>активная платная подписка на один AI-инструмент: ChatGPT или Claude.</li></ul><p>Ближе к встрече мы отправим точное время, адрес и инструкцию по подготовке.</p><p>До встречи!</p>`}
       </div>
     `,
   });

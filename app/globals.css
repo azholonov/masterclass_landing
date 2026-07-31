@@ -64,6 +64,8 @@ h2 span { color: #aaa69d; }
 .workshop-image img { object-fit: cover; transition: transform .45s ease; }
 .workshop-card:hover .workshop-image img { transform: scale(1.035); }
 .card-index { position: absolute; top: 15px; left: 15px; padding: 7px 9px; border-radius: 9px; color: #fff; background: rgba(5,5,5,.72); font-size: 11px; font-weight: 900; backdrop-filter: blur(7px); }
+.capacity-badge { position: absolute; top: 15px; right: 15px; display: inline-flex; align-items: center; gap: 7px; padding: 10px 13px; border: 2px solid var(--ink); border-radius: 999px; color: var(--ink); background: var(--lime); box-shadow: 4px 4px 0 var(--ink); font-size: 11px; font-weight: 950; text-transform: uppercase; letter-spacing: .04em; }
+.card-lime .capacity-badge { color: #fff; background: var(--violet); }
 .card-arrow { position: absolute; right: 15px; bottom: 15px; display: grid; place-items: center; width: 54px; height: 54px; border: 2px solid var(--ink); border-radius: 50%; color: var(--ink); background: var(--lime); box-shadow: 4px 4px 0 var(--ink); }
 .card-lime .card-arrow { background: var(--violet); color: #fff; }
 .workshop-content { padding: 24px 30px 32px; }
