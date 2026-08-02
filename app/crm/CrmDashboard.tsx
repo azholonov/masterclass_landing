@@ -2,8 +2,9 @@
 
 import { useMemo, useState } from "react";
 import {
-  Banknote, CalendarClock, Check, CircleAlert, CreditCard, LoaderCircle, Mail,
-  Megaphone, MessageCircle, MessageSquareText, Save, Search, Send, UserCheck, Users,
+  Banknote, BookOpen, CalendarClock, Check, CircleAlert, Copy, CreditCard, ExternalLink,
+  LoaderCircle, Mail, Megaphone, MessageCircle, MessageSquareText, Save, Search, Send,
+  UserCheck, Users,
 } from "lucide-react";
 import type { Participant, TelegramMessageType } from "@/lib/crm";
 import styles from "./crm.module.css";
@@ -43,6 +44,9 @@ function ParticipantCard({ participant }: { participant: Participant }) {
   const [telegramText, setTelegramText] = useState("");
   const [telegramState, setTelegramState] = useState<"idle" | "sending" | "sent" | "error">("idle");
   const [telegramError, setTelegramError] = useState("");
+  const [guideState, setGuideState] = useState<"idle" | "sending" | "sent" | "partial" | "error">("idle");
+  const [guideMessage, setGuideMessage] = useState("");
+  const [guideUrl, setGuideUrl] = useState("");
   const isDirty = JSON.stringify(draft) !== JSON.stringify(saved);
 
   function update<K extends keyof Participant>(key: K, value: Participant[K]) {
@@ -116,6 +120,47 @@ function ParticipantCard({ participant }: { participant: Participant }) {
     setTelegramState("sent");
   }
 
+  async function issueGuideAccess() {
+    if (!window.confirm(`Создать новую личную ссылку для ${draft.name}? Предыдущая ссылка перестанет работать.`)) return;
+
+    setGuideState("sending");
+    setGuideMessage("");
+    setGuideUrl("");
+    const response = await fetch(`/api/crm/participants/${participant.id}/guide-access`, { method: "POST" });
+    const result = (await response.json()) as {
+      message?: string;
+      emailed?: boolean;
+      guideUrl?: string;
+      sentAt?: string;
+    };
+
+    if (!response.ok || !result.guideUrl) {
+      setGuideState("error");
+      setGuideMessage(result.message ?? "Не удалось создать доступ.");
+      if (response.status === 401) window.location.assign("/crm/login");
+      return;
+    }
+
+    const sentAt = result.sentAt ?? new Date().toISOString();
+    const next = {
+      ...draft,
+      instructions_status: "sent" as const,
+      instructions_sent_at: draft.instructions_sent_at ?? sentAt,
+      updated_at: sentAt,
+    };
+    setDraft(next);
+    setSaved(next);
+    setGuideUrl(result.guideUrl);
+    setGuideState(result.emailed ? "sent" : "partial");
+    setGuideMessage(result.emailed ? "Личная ссылка отправлена на email." : result.message ?? "Скопируйте ссылку вручную.");
+  }
+
+  async function copyGuideUrl() {
+    if (!guideUrl) return;
+    await navigator.clipboard.writeText(guideUrl);
+    setGuideMessage("Ссылка скопирована.");
+  }
+
   return (
     <article className={styles.participantCard}>
       <header className={styles.cardHeader}>
@@ -146,6 +191,30 @@ function ParticipantCard({ participant }: { participant: Participant }) {
         <label><span>Следующее действие</span><input value={draft.next_action} maxLength={500} placeholder="Например: напомнить об оплате 10 августа" onChange={(e) => update("next_action", e.target.value)} /></label>
         <label><span>Внутренние заметки</span><textarea value={draft.notes} maxLength={5000} placeholder="Пожелания, договорённости, важный контекст…" onChange={(e) => update("notes", e.target.value)} /></label>
       </div>
+
+      <section className={styles.guideAccessSection}>
+        <div className={styles.guideAccessSummary}>
+          <div className={styles.guideAccessIcon}><BookOpen size={18} /></div>
+          <div>
+            <strong>Личная инструкция</strong>
+            <span>{draft.guide_completed_items.length} из 8 пунктов готово{draft.guide_progress_updated_at
+              ? ` · обновлено ${new Intl.DateTimeFormat("ru-RU", { dateStyle: "medium", timeStyle: "short", timeZone: "Asia/Bishkek" }).format(new Date(draft.guide_progress_updated_at))}`
+              : ""}</span>
+          </div>
+          <button type="button" onClick={issueGuideAccess} disabled={guideState === "sending" || draft.status === "cancelled" || draft.status === "next_run"}>
+            {guideState === "sending" ? <LoaderCircle className={styles.spin} size={15} /> : <Send size={15} />}
+            {guideState === "sending" ? "Отправляем…" : "Отправить доступ"}
+          </button>
+        </div>
+        {guideUrl ? (
+          <div className={styles.guideAccessLink}>
+            <input value={guideUrl} readOnly aria-label="Личная ссылка на инструкцию" />
+            <button type="button" onClick={copyGuideUrl}><Copy size={14} /> Копировать</button>
+            <a href={guideUrl} target="_blank" rel="noreferrer" aria-label="Открыть личную ссылку"><ExternalLink size={15} /></a>
+          </div>
+        ) : null}
+        {guideMessage ? <p className={guideState === "error" ? styles.saveError : ""}>{guideMessage}</p> : null}
+      </section>
 
       <section className={styles.telegramSection}>
         <div className={styles.telegramSectionHeader}>

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createHash, randomBytes } from "crypto";
 import { createSupabaseAdmin } from "@/lib/supabase";
 import { sendWelcomeEmail } from "@/lib/email";
+import { getGuideAccessUrl } from "@/lib/guide-auth";
 import { notifyAdminAboutRegistration } from "@/lib/telegram";
 import { isWorkshopId, type RegistrationStatus } from "@/lib/workshops";
 import {
@@ -104,14 +105,17 @@ export async function POST(request: Request) {
 
   const telegramStartToken = randomBytes(24).toString("base64url");
   const telegramStartTokenHash = createHash("sha256").update(telegramStartToken).digest("hex");
+  const guideAccessToken = randomBytes(32).toString("base64url");
+  const guideAccessTokenHash = createHash("sha256").update(guideAccessToken).digest("hex");
 
-  const { data, error } = await supabase.rpc("register_workshop_participant_secure", {
+  const { data, error } = await supabase.rpc("register_workshop_participant_secure_v2", {
     participant_name: name,
     participant_contact: contact,
     participant_telegram: telegram || null,
     participant_workshop: workshop,
     participant_source: "landing",
     participant_telegram_token_hash: telegramStartTokenHash,
+    participant_guide_token_hash: guideAccessTokenHash,
   });
 
   if (error) {
@@ -130,9 +134,10 @@ export async function POST(request: Request) {
     );
   }
 
-  const registration = data as { status?: unknown; created?: unknown } | null;
+  const registration = data as { id?: unknown; status?: unknown; created?: unknown } | null;
   if (
     !registration ||
+    typeof registration.id !== "string" ||
     !["new", "confirmed", "next_run"].includes(String(registration.status)) ||
     typeof registration.created !== "boolean"
   ) {
@@ -142,11 +147,14 @@ export async function POST(request: Request) {
 
   const registrationStatus: RegistrationStatus = registration.status === "next_run" ? "next_run" : "new";
   const isNextRun = registrationStatus === "next_run";
+  const guideUrl = registration.created && !isNextRun
+    ? getGuideAccessUrl(guideAccessToken, request.url) ?? undefined
+    : undefined;
 
   const deliveryResults = registration.created
     ? await Promise.allSettled([
         notifyAdminAboutRegistration({ name, email: contact, telegram, workshop, registrationStatus }),
-        sendWelcomeEmail({ name, email: contact, workshop, registrationStatus }),
+        sendWelcomeEmail({ name, email: contact, workshop, registrationStatus, guideUrl }),
       ])
     : [];
 
@@ -157,6 +165,16 @@ export async function POST(request: Request) {
   }
 
   const emailWasSent = deliveryResults[1]?.status === "fulfilled";
+  if (emailWasSent && guideUrl) {
+    const now = new Date().toISOString();
+    const { error: instructionsUpdateError } = await supabase
+      .from("workshop_registrations")
+      .update({ instructions_status: "sent", instructions_sent_at: now, updated_at: now })
+      .eq("id", registration.id);
+    if (instructionsUpdateError) {
+      console.error("Registration instructions status error:", instructionsUpdateError.code);
+    }
+  }
 
   const botUsername = process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME?.replace(/^@/, "");
   const telegramBotUrl = botUsername && registration.created

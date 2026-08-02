@@ -7,6 +7,8 @@
 .crmBrand em { color: #8d98aa; font-style: normal; font-weight: 600; }
 .topbar form { margin: 0; }
 .topbar button { display: inline-flex; align-items: center; gap: 7px; padding: 9px 12px; border: 1px solid #303846; border-radius: 9px; color: #c5cad3; background: #111720; cursor: pointer; }
+.topbarActions { display: flex; align-items: center; gap: 8px; }
+.topbarActions > a { display: inline-flex; align-items: center; gap: 7px; padding: 9px 12px; border: 1px solid #3c4927; border-radius: 9px; color: #d8e9bb; background: #141b10; font-size: 10px; font-weight: 850; }
 .crmContainer { width: min(1240px, calc(100% - 40px)); margin: 0 auto; padding: 54px 0 90px; }
 .pageHeading { display: flex; align-items: end; justify-content: space-between; gap: 40px; margin-bottom: 34px; }
 .kicker { margin: 0 0 9px; color: #c9ff27; font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: .13em; }
@@ -45,6 +47,18 @@
 .notesGrid { display: grid; grid-template-columns: .8fr 1.2fr; gap: 10px; padding: 16px 22px 0; }
 .notesGrid input { height: 44px; padding: 0 11px; font-size: 11px; }
 .notesGrid textarea { display: block; min-height: 75px; padding: 11px; resize: vertical; font-size: 11px; line-height: 1.45; }
+.guideAccessSection { margin: 17px 22px 0; padding: 14px; border: 1px solid #394627; border-radius: 13px; background: #10170d; }
+.guideAccessSummary { display: grid; grid-template-columns: 38px 1fr auto; gap: 11px; align-items: center; }
+.guideAccessIcon { display: grid; place-items: center; width: 38px; height: 38px; border-radius: 10px; color: #111; background: #c9ff27; }
+.guideAccessSummary strong { display: block; color: #eef5e3; font-size: 11px; }
+.guideAccessSummary span { display: block; margin-top: 4px; color: #78846d; font-size: 9px; }
+.guideAccessSummary > button, .guideAccessLink button { display: inline-flex; align-items: center; justify-content: center; gap: 7px; min-height: 36px; padding: 0 11px; border: 1px solid #4a5b31; border-radius: 8px; color: #d9e9c0; background: #1a2414; font-size: 9px; font-weight: 850; cursor: pointer; }
+.guideAccessSummary > button:disabled { opacity: .38; cursor: default; }
+.guideAccessLink { display: grid; grid-template-columns: 1fr auto 36px; gap: 7px; margin-top: 12px; }
+.guideAccessLink input { min-width: 0; height: 36px; padding: 0 10px; border: 1px solid #344129; border-radius: 8px; outline: 0; color: #b9c7a7; background: #090e07; font-size: 9px; }
+.guideAccessLink a { display: grid; place-items: center; width: 36px; border: 1px solid #4a5b31; border-radius: 8px; color: #c9ff27; background: #1a2414; }
+.guideAccessSection > p { margin: 10px 0 0; color: #98c97a; font-size: 9px; }
+.guideAccessSection > p.saveError { color: #ff9e94; }
 .telegramSection { margin: 17px 22px 0; border: 1px solid #293544; border-radius: 13px; background: #0b111a; }
 .telegramSectionHeader { display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 13px 14px; }
 .telegramSectionHeader > div > span { display: flex; align-items: center; gap: 7px; color: #d9e3ef; font-size: 11px; font-weight: 900; }
@@ -96,6 +110,7 @@
   .topbar { min-height: 62px; padding: 0 12px; }
   .crmBrand em { display: none; }
   .topbar button { font-size: 0; }
+  .topbarActions > a { font-size: 0; }
   .pageHeading { display: block; }
   .pageHeading > p { margin-top: 14px; }
   .statsGrid { grid-template-columns: 1fr 1fr; gap: 8px; }
@@ -106,6 +121,11 @@
   .contactLinks { justify-content: flex-start; margin-top: 13px; }
   .fieldsGrid { grid-template-columns: 1fr 1fr; padding: 17px 17px 0; }
   .notesGrid { grid-template-columns: 1fr; padding: 14px 17px 0; }
+  .guideAccessSection { margin-inline: 17px; }
+  .guideAccessSummary { grid-template-columns: 38px 1fr; }
+  .guideAccessSummary > button { grid-column: 1 / -1; width: 100%; }
+  .guideAccessLink { grid-template-columns: 1fr 36px; }
+  .guideAccessLink button { grid-column: 1 / -1; grid-row: 2; }
   .telegramSection { margin-inline: 17px; }
   .telegramSectionHeader { align-items: flex-start; }
   .telegramActions { align-items: stretch; flex-direction: column; }

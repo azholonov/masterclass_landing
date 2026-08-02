@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { LogOut } from "lucide-react";
+import { BookOpen, LogOut } from "lucide-react";
 import { CRM_SESSION_COOKIE, isCrmConfigured, verifyCrmSession } from "@/lib/crm-auth";
 import { participantSelect, type Participant } from "@/lib/crm";
 import { createSupabaseAdmin } from "@/lib/supabase";
@@ -36,7 +36,10 @@ export default async function CrmPage() {
     <main className={styles.crmPage}>
       <header className={styles.topbar}>
         <a className={styles.crmBrand} href="/"><span>✦</span> Мастерская <em>/ CRM</em></a>
-        <form action="/api/crm/logout" method="post"><button type="submit"><LogOut size={15} /> Выйти</button></form>
+        <div className={styles.topbarActions}>
+          <a href="/guide"><BookOpen size={15} /> Инструкция</a>
+          <form action="/api/crm/logout" method="post"><button type="submit"><LogOut size={15} /> Выйти</button></form>
+        </div>
       </header>
       <div className={styles.crmContainer}>
         <div className={styles.pageHeading}>

@@ -8,6 +8,9 @@ create table if not exists public.workshop_registrations (
   telegram text,
   telegram_chat_id bigint,
   telegram_start_token_hash text,
+  guide_access_token_hash text,
+  guide_completed_items text[] not null default '{}',
+  guide_progress_updated_at timestamptz,
   workshop text not null check (workshop in ('vibecoding-kg', 'vibecoding', 'token-economics')),
   source text not null default 'landing',
   status text not null default 'new' check (status in ('new', 'confirmed', 'cancelled'))
@@ -16,6 +19,9 @@ create table if not exists public.workshop_registrations (
 alter table public.workshop_registrations
   add column if not exists telegram_chat_id bigint,
   add column if not exists telegram_start_token_hash text,
+  add column if not exists guide_access_token_hash text,
+  add column if not exists guide_completed_items text[] not null default '{}',
+  add column if not exists guide_progress_updated_at timestamptz,
   add column if not exists payment_status text not null default 'unpaid',
   add column if not exists payment_amount integer not null default 0,
   add column if not exists paid_at timestamptz,
@@ -76,6 +82,21 @@ alter table public.workshop_registrations
 alter table public.workshop_registrations
   add constraint workshop_registrations_telegram_length_check
   check (telegram is null or char_length(telegram) between 5 and 33) not valid;
+
+alter table public.workshop_registrations
+  drop constraint if exists workshop_registrations_guide_token_hash_check,
+  drop constraint if exists workshop_registrations_guide_completed_items_check;
+
+alter table public.workshop_registrations
+  add constraint workshop_registrations_guide_token_hash_check
+    check (guide_access_token_hash is null or guide_access_token_hash ~ '^[0-9a-f]{64}$'),
+  add constraint workshop_registrations_guide_completed_items_check
+    check (
+      cardinality(guide_completed_items) <= 8
+      and guide_completed_items <@ array[
+        'laptop', 'space', 'ai', 'phone', 'accounts', 'doctor', 'device', 'hello'
+      ]::text[]
+    );
 
 create table if not exists public.api_rate_limits (
   action text not null,
@@ -278,9 +299,97 @@ revoke all on function public.register_workshop_participant_secure(text, text, t
 grant execute on function public.register_workshop_participant_secure(text, text, text, text, text, text)
   to service_role;
 
+create or replace function public.register_workshop_participant_secure_v2(
+  participant_name text,
+  participant_contact text,
+  participant_telegram text,
+  participant_workshop text,
+  participant_source text,
+  participant_telegram_token_hash text,
+  participant_guide_token_hash text
+)
+returns jsonb
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  existing_id uuid;
+  existing_status text;
+  created_id uuid;
+  assigned_status text;
+begin
+  if participant_name is null
+    or char_length(participant_name) not between 2 and 120
+    or participant_contact is null
+    or char_length(participant_contact) not between 5 and 200
+    or participant_workshop is null
+    or participant_workshop not in ('vibecoding-kg', 'vibecoding', 'token-economics')
+    or participant_telegram_token_hash is null
+    or participant_telegram_token_hash !~ '^[0-9a-f]{64}$'
+    or participant_guide_token_hash is null
+    or participant_guide_token_hash !~ '^[0-9a-f]{64}$'
+    or (
+      participant_telegram is not null
+      and char_length(participant_telegram) not between 5 and 33
+    ) then
+    raise exception 'Invalid registration fields';
+  end if;
+
+  perform pg_advisory_xact_lock(
+    hashtextextended(lower(participant_contact) || ':' || participant_workshop, 0)
+  );
+
+  select id, status into existing_id, existing_status
+  from public.workshop_registrations
+  where workshop = participant_workshop
+    and lower(contact) = lower(participant_contact)
+    and status in ('new', 'confirmed', 'next_run')
+  order by created_at desc
+  limit 1;
+
+  if existing_id is not null then
+    return jsonb_build_object('id', existing_id, 'status', existing_status, 'created', false);
+  end if;
+
+  assigned_status := public.register_workshop_participant(
+    participant_name,
+    participant_contact,
+    participant_telegram,
+    participant_workshop,
+    participant_source,
+    participant_telegram_token_hash
+  );
+
+  select id into created_id
+  from public.workshop_registrations
+  where telegram_start_token_hash = participant_telegram_token_hash
+  limit 1;
+
+  if created_id is null then
+    raise exception 'Registration insert failed';
+  end if;
+
+  update public.workshop_registrations
+  set guide_access_token_hash = participant_guide_token_hash
+  where id = created_id;
+
+  return jsonb_build_object('id', created_id, 'status', assigned_status, 'created', true);
+end;
+$$;
+
+revoke all on function public.register_workshop_participant_secure_v2(text, text, text, text, text, text, text)
+  from public, anon, authenticated;
+grant execute on function public.register_workshop_participant_secure_v2(text, text, text, text, text, text, text)
+  to service_role;
+
 create unique index if not exists workshop_registrations_telegram_start_token_idx
   on public.workshop_registrations (telegram_start_token_hash)
   where telegram_start_token_hash is not null;
+
+create unique index if not exists workshop_registrations_guide_access_token_idx
+  on public.workshop_registrations (guide_access_token_hash)
+  where guide_access_token_hash is not null;
 
 create index if not exists workshop_registrations_contact_workshop_idx
   on public.workshop_registrations (lower(contact), workshop);

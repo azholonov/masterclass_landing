@@ -35,6 +35,8 @@ export type Participant = {
   attendance_status: AttendanceStatus;
   next_action: string;
   notes: string;
+  guide_completed_items: string[];
+  guide_progress_updated_at: string | null;
 };
 
 export const participantSelect = [
@@ -43,4 +45,5 @@ export const participantSelect = [
   "workshop", "source", "status", "payment_status",
   "payment_amount", "paid_at", "instructions_status", "instructions_sent_at",
   "contact_status", "last_contacted_at", "attendance_status", "next_action", "notes",
+  "guide_completed_items", "guide_progress_updated_at",
 ].join(",");

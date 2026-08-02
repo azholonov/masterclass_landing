@@ -165,3 +165,11 @@
 - [x] Explain mobile fundamentals, architecture, app types, and delivery.
 - [x] Connect the public landing page to the participant guide.
 - [x] Validate the production build and responsive layout.
+
+## Phase 31 — Private Participant Guide Access
+- [x] Protect the guide for active participants and CRM administrators.
+- [x] Issue hashed personal access links through registration and CRM email.
+- [x] Save each participant's checklist progress in Supabase.
+- [x] Show guide access and progress controls in the participant CRM.
+- [x] Validate the protected routes and production build.
+- [ ] Apply the updated schema, configure the guide secret, and redeploy.

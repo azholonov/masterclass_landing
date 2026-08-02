@@ -1,7 +1,7 @@
 "use client";
 
 import type { CSSProperties } from "react";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import {
   ArrowLeft,
@@ -23,6 +23,7 @@ import {
   Laptop,
   LayoutGrid,
   Lightbulb,
+  LogOut,
   Package,
   Play,
   RefreshCcw,
@@ -37,11 +38,11 @@ import {
   Workflow,
   Wrench,
 } from "lucide-react";
+import type { GuideChecklistItemId } from "@/lib/guide-progress";
 import styles from "./guide.module.css";
 
 type Platform = "macos" | "windows";
-
-const STORAGE_KEY = "masterclass-guide-progress-v1";
+type GuideViewer = { role: "participant" | "admin"; name: string };
 
 const checklistItems = [
   { id: "laptop", title: "Ноутбук и зарядка", text: "macOS или Windows, минимум 8 ГБ RAM; 16 ГБ комфортнее." },
@@ -196,26 +197,20 @@ function CodeBlock({ command, copied, onCopy }: { command: string; copied: boole
   );
 }
 
-export function GuideApp() {
+export function GuideApp({
+  viewer,
+  initialCompletedItems,
+}: {
+  viewer: GuideViewer;
+  initialCompletedItems: GuideChecklistItemId[];
+}) {
   const [platform, setPlatform] = useState<Platform>("macos");
-  const [checked, setChecked] = useState<Record<string, boolean>>({});
-  const [hydrated, setHydrated] = useState(false);
+  const [checked, setChecked] = useState<Record<string, boolean>>(
+    Object.fromEntries(initialCompletedItems.map((id) => [id, true])),
+  );
   const [copiedCommand, setCopiedCommand] = useState("");
-
-  useEffect(() => {
-    try {
-      const stored = window.localStorage.getItem(STORAGE_KEY);
-      if (stored) setChecked(JSON.parse(stored) as Record<string, boolean>);
-    } catch {
-      // Progress is a convenience; the guide works without browser storage.
-    }
-    setHydrated(true);
-  }, []);
-
-  useEffect(() => {
-    if (!hydrated) return;
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(checked));
-  }, [checked, hydrated]);
+  const [saveState, setSaveState] = useState<"idle" | "saving" | "saved" | "error">("idle");
+  const saveQueue = useRef<Promise<void>>(Promise.resolve());
 
   const completed = useMemo(
     () => checklistItems.filter((item) => checked[item.id]).length,
@@ -223,8 +218,28 @@ export function GuideApp() {
   );
   const progress = Math.round((completed / checklistItems.length) * 100);
 
-  const toggleItem = (id: string) => {
-    setChecked((current) => ({ ...current, [id]: !current[id] }));
+  const queueProgressSave = (completedItems: string[]) => {
+    if (viewer.role !== "participant") return;
+    setSaveState("saving");
+    saveQueue.current = saveQueue.current.then(async () => {
+      const response = await fetch("/api/guide/progress", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ completedItems }),
+      });
+      if (!response.ok) throw new Error("Guide progress save failed");
+      setSaveState("saved");
+    }).catch(() => {
+      setSaveState("error");
+    });
+  };
+
+  const toggleItem = (id: GuideChecklistItemId) => {
+    setChecked((current) => {
+      const next = { ...current, [id]: !current[id] };
+      queueProgressSave(checklistItems.filter((item) => next[item.id]).map((item) => item.id));
+      return next;
+    });
   };
 
   const copy = async (command: string) => {
@@ -237,7 +252,10 @@ export function GuideApp() {
     }
   };
 
-  const resetProgress = () => setChecked({});
+  const resetProgress = () => {
+    setChecked({});
+    queueProgressSave([]);
+  };
 
   return (
     <main className={styles.app}>
@@ -247,10 +265,16 @@ export function GuideApp() {
             <span className={styles.brandMark}>✦</span>
             <span>МАСТЕР<span>СКАЯ</span></span>
           </Link>
-          <span className={styles.topbarLabel}>Field guide · 2026</span>
-          <Link className={styles.backLink} href="/">
-            <ArrowLeft size={17} /> <span>К мастер-классу</span>
-          </Link>
+          <span className={styles.topbarLabel}>{viewer.role === "admin" ? "Режим организатора" : viewer.name}</span>
+          <div className={styles.viewerControls}>
+            {viewer.role === "admin" ? (
+              <Link className={styles.backLink} href="/crm"><ArrowLeft size={17} /> <span>В CRM</span></Link>
+            ) : (
+              <form action="/api/guide/logout" method="post">
+                <button type="submit"><LogOut size={15} /> <span>Выйти</span></button>
+              </form>
+            )}
+          </div>
         </div>
       </header>
 
@@ -271,7 +295,7 @@ export function GuideApp() {
 
           <div className={styles.statusCard}>
             <div className={styles.statusTop}>
-              <span>Готовность к воркшопу</span>
+              <span>{viewer.role === "admin" ? "Предпросмотр организатора" : `Прогресс · ${viewer.name}`}</span>
               <ShieldCheck size={21} />
             </div>
             <div className={styles.progressVisual}>
@@ -283,7 +307,16 @@ export function GuideApp() {
                 <div><strong>{progress}%</strong><span>{completed}/{checklistItems.length} готово</span></div>
               </div>
               <div className={styles.progressCopy}>
-                <p>{progress === 100 ? "Среда готова. Можно собирать приложение." : "Отмечайте пункты — прогресс сохранится на этом устройстве."}</p>
+                <p>{viewer.role === "admin"
+                  ? "Вы видите закрытую инструкцию как организатор. Этот прогресс не сохраняется."
+                  : progress === 100
+                    ? "Среда готова. Прогресс сохранён в вашем профиле."
+                    : "Отмечайте пункты — прогресс автоматически сохранится в вашем профиле."}</p>
+                {viewer.role === "participant" && saveState !== "idle" ? (
+                  <span className={`${styles.saveState} ${saveState === "error" ? styles.saveStateError : ""}`} aria-live="polite">
+                    {saveState === "saving" ? "Сохраняем…" : saveState === "saved" ? "Сохранено" : "Не сохранено — повторите действие"}
+                  </span>
+                ) : null}
                 {completed > 0 && <button type="button" onClick={resetProgress}><RefreshCcw size={13} /> Сбросить</button>}
               </div>
             </div>

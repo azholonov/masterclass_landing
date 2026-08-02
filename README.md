@@ -16,6 +16,7 @@ Production: https://masterclasslanding.vercel.app
 Import the repository in Vercel and add these environment variables:
 
 - `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SITE_URL` (the public origin used in participant access links)
 - `SUPABASE_SERVICE_ROLE_KEY`
 - `TELEGRAM_BOT_TOKEN`
 - `TELEGRAM_ADMIN_CHAT_ID`
@@ -28,9 +29,14 @@ Import the repository in Vercel and add these environment variables:
 - `CRM_USERNAME`
 - `CRM_PASSWORD_HASH` (generated locally; never store the plaintext password)
 - `CRM_SESSION_SECRET` (a random value at least 32 characters long)
+- `GUIDE_SESSION_SECRET` (a different random value at least 32 characters long)
 
 The service role key is server-only and must never be prefixed with `NEXT_PUBLIC_`.
 The same applies to all `CRM_` variables. The private dashboard is available at `/crm`.
+
+The participant guide is available only through a personal email link or an active
+CRM administrator session. Applying `supabase/schema.sql` adds hashed guide tokens
+and per-participant checklist progress. A newly issued CRM link revokes the old one.
 
 Create a Cloudflare Turnstile widget for the production hostname and add its site key
 and secret key to Vercel. Registration fails closed when either Turnstile key is missing.
