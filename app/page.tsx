@@ -152,6 +152,7 @@ export default async function Home() {
           <div className="nav-links">
             <a href="#workshops">Встречи</a>
             <a href="#format">Как это будет</a>
+            <a href="/guide">Подготовка</a>
             <a href="#expert">Эксперт</a>
             <a href="#registration">Регистрация</a>
           </div>
@@ -287,6 +288,7 @@ export default async function Home() {
                 <span>Подготовка входит в стоимость</span>
                 <h3>Настройтесь сами или приходите на час раньше</h3>
                 <p>Для участия нужны личный ноутбук и активная платная подписка на один AI-инструмент — ChatGPT или Claude. После регистрации пришлём пошаговую инструкцию. Если удобнее подготовиться вместе, эксперт поможет установить и настроить всё необходимое за час до начала.</p>
+                <a className="prep-note-link" href="/guide">Открыть инструкцию <ArrowRight size={16} /></a>
               </div>
             </div>
             <div className="format-note">
@@ -348,7 +350,7 @@ export default async function Home() {
 
       <footer className="footer container">
         <a className="brand" href="#top"><span className="brand-spark">✦</span><span>МАСТЕР<span>СКАЯ</span></span></a>
-        <p>Практические встречи для любопытных людей.</p>
+        <p><a href="/guide">Инструкция участника</a></p>
         <p>Бишкек · 2026</p>
       </footer>
     </main>

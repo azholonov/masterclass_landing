@@ -158,3 +158,10 @@
 - [x] Replace the small capacity metadata with prominent limited-seat badges.
 - [x] Reinforce the 12-seat limit beside the registration form.
 - [x] Validate the production build.
+
+## Phase 30 — Mobile Vibecoding Participant Guide
+- [x] Add a dedicated preparation and learning web app.
+- [x] Cover Flutter setup for macOS and Windows with verification steps.
+- [x] Explain mobile fundamentals, architecture, app types, and delivery.
+- [x] Connect the public landing page to the participant guide.
+- [x] Validate the production build and responsive layout.

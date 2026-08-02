@@ -2,11 +2,12 @@
 
 ## Summary
 - Russian-language landing page for workshop registration.
-- Current phase: Phase 26 — Kyrgyz-language session built; deployment pending.
+- Current phase: Phase 30 — participant guide complete; deployment pending.
 - Workshop: mobile vibe coding.
 
 ## Key Paths
 - `app/page.tsx` — landing page and registration UI.
+- `app/guide/` — participant setup guide and mobile development handbook.
 - `app/api/register/route.ts` — server-side registration endpoint.
 - `app/globals.css` — visual system and responsive styles.
 - `public/art/` — generated robot and botanical artwork.
