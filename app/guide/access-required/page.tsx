@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowLeft, ArrowRight, LockKeyhole, Mail, ShieldCheck } from "lucide-react";
+import { ArrowLeft, LockKeyhole, Mail } from "lucide-react";
 import styles from "../guide.module.css";
 
 export const metadata: Metadata = {
@@ -30,11 +30,9 @@ export default async function GuideAccessRequiredPage({
         <p className={styles.accessLead}>{message}</p>
         <div className={styles.accessSteps}>
           <div><Mail size={18} /><span><strong>Участник</strong>Найдите письмо «Личная инструкция» или напишите организатору.</span></div>
-          <div><ShieldCheck size={18} /><span><strong>Организатор</strong>Войдите в CRM — администратор имеет прямой доступ.</span></div>
         </div>
         <div className={styles.accessActions}>
-          <Link href="/crm/login">Войти как организатор <ArrowRight size={17} /></Link>
-          <a href="mailto:soloapps.dev@gmail.com">Запросить новую ссылку</a>
+          <a className={styles.accessPrimaryAction} href="mailto:soloapps.dev@gmail.com">Запросить новую ссылку</a>
         </div>
       </section>
     </main>

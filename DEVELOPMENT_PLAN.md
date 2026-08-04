@@ -178,3 +178,8 @@
 - [x] Scope guide color tokens to the standalone access page.
 - [x] Increase access-card text and control contrast.
 - [x] Validate the production build.
+
+## Phase 33 — Hide Public Organizer Entry
+- [x] Remove the organizer login action from the participant access page.
+- [x] Remove public organizer access instructions.
+- [x] Validate the production build.

@@ -249,9 +249,8 @@
 .accessSteps span { color: rgba(255,255,255,.72); font-size: 10px; line-height: 1.45; }
 .accessSteps strong { display: block; margin-bottom: 3px; color: #fff; font-size: 12px; }
 .accessActions { display: flex; align-items: center; gap: 20px; margin-top: 27px; }
-.accessActions a:first-child { display: inline-flex; align-items: center; gap: 10px; min-height: 50px; padding: 0 17px; border-radius: 11px; color: var(--guide-ink); background: var(--guide-lime); font-size: 10px; font-weight: 950; }
-.accessActions a:last-child { color: rgba(255,255,255,.8); font-size: 10px; font-weight: 850; }
-.accessActions a:last-child:hover { color: var(--guide-lime); }
+.accessPrimaryAction { display: inline-flex; align-items: center; justify-content: center; min-height: 50px; padding: 0 17px; border-radius: 11px; color: var(--guide-ink); background: var(--guide-lime); font-size: 10px; font-weight: 950; }
+.accessPrimaryAction:hover { background: #d7ff5f; }
 
 @media (max-width: 1040px) {
   .heroGrid { grid-template-columns: 1fr; gap: 45px; }
@@ -309,8 +308,6 @@
   .footer .shell { padding: 35px 0; flex-direction: column; text-align: center; }
   .accessCard { padding: 30px 21px; }
   .accessActions { align-items: stretch; flex-direction: column; }
-  .accessActions a:first-child { justify-content: center; }
-  .accessActions a:last-child { text-align: center; }
 }
 
 @media (max-width: 430px) {
