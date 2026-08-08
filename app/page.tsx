@@ -4,7 +4,6 @@ import {
   ArrowRight,
   ArrowUpRight,
   BadgeDollarSign,
-  CalendarDays,
   Check,
   Clock3,
   Code2,
@@ -28,8 +27,6 @@ const workshopSessions = [
   {
     id: "vibecoding-kg" as const,
     number: "01",
-    date: "14-август · жума",
-    dateTime: "2026-08-14",
     language: "Кыргыз тилинде",
     title: "Вайбкодинг менен мобилдик тиркеме жасайбыз",
     subtitle: "Идеядан алгачкы билдге чейин — бир кечте",
@@ -46,8 +43,6 @@ const workshopSessions = [
   {
     id: "vibecoding" as const,
     number: "02",
-    date: "15 августа · суббота",
-    dateTime: "2026-08-15",
     language: "На русском языке",
     title: "Вайбкодим мобильное приложение",
     subtitle: "От идеи до первого билда — за один вечер",
@@ -177,7 +172,7 @@ export default async function Home() {
         <div className="hero-shade" />
 
         <div className="hero-content container">
-          <div className="hero-kicker"><span>Бишкек</span><span>14–15 августа</span><span>2026</span></div>
+          <div className="hero-kicker"><span>Бишкек</span><span>Waitlist</span><span>Следующий набор</span></div>
           <h1>НЕ СМОТРИ.<br /><em>СОЗДАВАЙ.</em></h1>
           <p>Практический мастер-класс по мобильному вайбкодингу на кыргызском и русском языках. Сделай своё первое приложение своими руками.</p>
           <div className="hero-actions">
@@ -218,7 +213,6 @@ export default async function Home() {
                   </a>
                 </div>
                 <div className="workshop-content">
-                  <time dateTime={workshop.dateTime}><CalendarDays size={16} /> {workshop.date}</time>
                   <p className="workshop-language">{workshop.language}</p>
                   <h3>{workshop.title}</h3>
                   <p className="card-subtitle">{workshop.subtitle}</p>

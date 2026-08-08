@@ -159,7 +159,7 @@ export function RegistrationForm({ availability }: RegistrationFormProps) {
       </div>
 
       <fieldset>
-        <legend>Выберите язык и дату</legend>
+        <legend>Выберите язык</legend>
         <div className="workshop-options">
           <label>
             <input
@@ -169,7 +169,7 @@ export function RegistrationForm({ availability }: RegistrationFormProps) {
               checked={selectedWorkshop === "vibecoding-kg"}
               onChange={() => setSelectedWorkshop("vibecoding-kg")}
             />
-            <span>14-август · Кыргыз тилинде{!availability["vibecoding-kg"] && <small>Следующий набор</small>}</span>
+            <span>Кыргыз тилинде{!availability["vibecoding-kg"] && <small>Следующий набор</small>}</span>
           </label>
           <label>
             <input
@@ -179,7 +179,7 @@ export function RegistrationForm({ availability }: RegistrationFormProps) {
               checked={selectedWorkshop === "vibecoding"}
               onChange={() => setSelectedWorkshop("vibecoding")}
             />
-            <span>15 августа · На русском{!availability.vibecoding && <small>Следующий набор</small>}</span>
+            <span>На русском{!availability.vibecoding && <small>Следующий набор</small>}</span>
           </label>
         </div>
       </fieldset>

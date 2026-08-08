@@ -189,3 +189,8 @@
 - [x] Add one-to-one email messaging to participant cards in the CRM.
 - [x] Validate the production build.
 - [ ] Apply the updated registration function to Supabase and redeploy.
+
+## Phase 35 — Waitlist Date Cleanup
+- [x] Remove closed August dates from the public landing page and waitlist form.
+- [x] Validate the production build.
+- [ ] Redeploy the updated landing page.
