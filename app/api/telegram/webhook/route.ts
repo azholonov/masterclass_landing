@@ -1,13 +1,16 @@
 import { createHash } from "crypto";
 import { NextResponse } from "next/server";
 import { createSupabaseAdmin } from "@/lib/supabase";
-import { participantWelcomeText, sendTelegramMessage } from "@/lib/telegram";
-import { isWorkshopId } from "@/lib/workshops";
+import { copyTelegramMessage, participantWelcomeText, sendTelegramMessage } from "@/lib/telegram";
+import { isWorkshopId, workshops } from "@/lib/workshops";
 import { readJsonBody } from "@/lib/request-security";
 
 type TelegramUpdate = {
   message?: {
+    message_id?: number;
     text?: string;
+    photo?: Array<{ file_id?: string }>;
+    document?: { file_id?: string };
     chat?: { id?: number };
   };
 };
@@ -28,11 +31,59 @@ export async function POST(request: Request) {
 
   const text = update.message?.text?.trim() || "";
   const chatId = update.message?.chat?.id;
+  const messageId = update.message?.message_id;
+  const hasReceipt = Boolean(update.message?.photo?.length || update.message?.document?.file_id);
   const match = text.match(/^\/start(?:@\w+)?\s+([A-Za-z0-9_-]+)$/);
 
-  if (!chatId || !match) {
+  if (!chatId) return NextResponse.json({ ok: true });
+
+  if (hasReceipt && messageId) {
+    const supabase = createSupabaseAdmin();
+    if (!supabase) return NextResponse.json({ ok: false }, { status: 503 });
+
+    const { data: participant, error } = await supabase
+      .from("workshop_registrations")
+      .select("id,name,contact,workshop")
+      .eq("telegram_chat_id", chatId)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (error) {
+      console.error("Telegram receipt participant lookup error:", error.code);
+      return NextResponse.json({ ok: false }, { status: 500 });
+    }
+    if (!participant || !isWorkshopId(participant.workshop)) {
+      await sendTelegramMessage(chatId, "Сначала подключите бота по персональной ссылке из письма об оплате.");
+      return NextResponse.json({ ok: true });
+    }
+
+    const adminChatId = process.env.TELEGRAM_ADMIN_CHAT_ID;
+    if (!adminChatId) return NextResponse.json({ ok: false }, { status: 503 });
+
+    try {
+      await sendTelegramMessage(adminChatId, [
+        "Чек об оплате 🧾",
+        `Участник: ${participant.name}`,
+        `Email: ${participant.contact}`,
+        `Мастер-класс: ${workshops[participant.workshop].title}`,
+        "Проверьте чек и нажмите «Подтвердить оплату и место» в CRM.",
+      ].join("\n"));
+      await copyTelegramMessage(adminChatId, chatId, messageId);
+      await sendTelegramMessage(chatId, "Чек получен ✅ После проверки мы пришлём подтверждение оплаты и личную инструкцию на email.");
+    } catch (receiptError) {
+      console.error("Telegram receipt forwarding error:", receiptError instanceof Error ? receiptError.message : "Unknown error");
+      return NextResponse.json({ ok: false }, { status: 502 });
+    }
+
+    return NextResponse.json({ ok: true });
+  }
+
+  if (!match) {
     if (chatId && text.startsWith("/start")) {
       await sendTelegramMessage(chatId, "Сначала зарегистрируйтесь на сайте, затем откройте персональную ссылку Telegram.");
+    } else if (text) {
+      await sendTelegramMessage(chatId, "Чтобы подтвердить оплату, отправьте чек как фотографию или файл.");
     }
     return NextResponse.json({ ok: true });
   }

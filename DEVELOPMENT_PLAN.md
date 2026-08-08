@@ -194,3 +194,11 @@
 - [x] Remove closed August dates from the public landing page and waitlist form.
 - [x] Validate the production build.
 - [ ] Redeploy the updated landing page.
+
+## Phase 36 — CRM Payment Confirmation Emails
+- [x] Add a prepared payment-request email with MBANK details and a personal Telegram-bot link.
+- [x] Add a payment-confirmation email that secures the place and issues private guide access.
+- [x] Forward receipt photos and files from the participant bot to the organizer.
+- [x] Add the two ordered email actions to each CRM participant card.
+- [x] Validate the production build.
+- [ ] Deploy and smoke-test Gmail and Telegram delivery in production.

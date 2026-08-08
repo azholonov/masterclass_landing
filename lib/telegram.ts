@@ -53,6 +53,30 @@ export async function sendTelegramMessage(
   return { messageId: data.result.message_id };
 }
 
+export async function copyTelegramMessage(toChatId: string | number, fromChatId: string | number, messageId: number) {
+  const token = getBotToken();
+  if (!token) throw new Error("TELEGRAM_BOT_TOKEN is not configured");
+
+  const response = await fetch(`https://api.telegram.org/bot${token}/copyMessage`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ chat_id: toChatId, from_chat_id: fromChatId, message_id: messageId }),
+    signal: AbortSignal.timeout(10_000),
+  });
+
+  if (!response.ok) {
+    const body = await response.text();
+    throw new Error(`Telegram copyMessage failed (${response.status}): ${body.slice(0, 300)}`);
+  }
+
+  const data = (await response.json()) as TelegramSendMessageResponse;
+  if (!data.ok || typeof data.result?.message_id !== "number") {
+    throw new Error("Telegram copyMessage returned an invalid response");
+  }
+
+  return { messageId: data.result.message_id };
+}
+
 export async function notifyAdminAboutRegistration(input: {
   name: string;
   email: string;

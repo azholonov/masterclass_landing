@@ -2,7 +2,7 @@
 
 ## Summary
 - Russian-language landing page for workshop registration.
-- Current phase: Phase 35 — closed dates removed; deployment pending.
+- Current phase: Phase 36 — CRM payment emails ready; deployment pending.
 - Workshop: mobile vibe coding.
 
 ## Key Paths

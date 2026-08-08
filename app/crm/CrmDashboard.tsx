@@ -56,7 +56,13 @@ function ParticipantCard({ participant }: { participant: Participant }) {
   const [guideState, setGuideState] = useState<"idle" | "sending" | "sent" | "partial" | "error">("idle");
   const [guideMessage, setGuideMessage] = useState("");
   const [guideUrl, setGuideUrl] = useState("");
+  const [preparedEmailState, setPreparedEmailState] = useState<{
+    action: "payment_request" | "payment_confirmation" | null;
+    status: "idle" | "sending" | "sent" | "partial" | "error";
+    message: string;
+  }>({ action: null, status: "idle", message: "" });
   const isDirty = JSON.stringify(draft) !== JSON.stringify(saved);
+  const isMobileWorkshop = draft.workshop === "vibecoding" || draft.workshop === "vibecoding-kg";
 
   function update<K extends keyof Participant>(key: K, value: Participant[K]) {
     setDraft((current) => ({ ...current, [key]: value }));
@@ -180,7 +186,11 @@ function ParticipantCard({ participant }: { participant: Participant }) {
     setGuideState("sending");
     setGuideMessage("");
     setGuideUrl("");
-    const response = await fetch(`/api/crm/participants/${participant.id}/guide-access`, { method: "POST" });
+    const response = await fetch(`/api/crm/participants/${participant.id}/guide-access`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ emailType: "guide_access" }),
+    });
     const result = (await response.json()) as {
       message?: string;
       emailed?: boolean;
@@ -207,6 +217,80 @@ function ParticipantCard({ participant }: { participant: Participant }) {
     setGuideUrl(result.guideUrl);
     setGuideState(result.emailed ? "sent" : "partial");
     setGuideMessage(result.emailed ? "Личная ссылка отправлена на email." : result.message ?? "Скопируйте ссылку вручную.");
+  }
+
+  async function sendPreparedEmail(action: "payment_request" | "payment_confirmation") {
+    const confirmation = action === "payment_request"
+      ? `Отправить ${draft.name} письмо с реквизитами MBANK и ссылкой на Telegram-бот?`
+      : `Оплата от ${draft.name} проверена? Письмо закрепит место, отметит 5 000 сом как оплаченные и выдаст доступ к guide.`;
+    if (!window.confirm(confirmation)) return;
+
+    setPreparedEmailState({ action, status: "sending", message: "" });
+    const isPaymentRequest = action === "payment_request";
+    const response = await fetch(
+      `/api/crm/participants/${participant.id}/${isPaymentRequest ? "email" : "guide-access"}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(isPaymentRequest
+          ? { template: "payment_request" }
+          : { emailType: "payment_confirmation" }),
+      },
+    );
+    const result = (await response.json()) as {
+      message?: string;
+      emailed?: boolean;
+      guideUrl?: string;
+      sentAt?: string;
+      paymentAmount?: number;
+    };
+
+    if (!response.ok) {
+      setPreparedEmailState({ action, status: "error", message: result.message ?? "Не удалось отправить письмо." });
+      if (response.status === 401) window.location.assign("/crm/login");
+      return;
+    }
+
+    const sentAt = result.sentAt ?? new Date().toISOString();
+    if (isPaymentRequest) {
+      const next = {
+        ...draft,
+        contact_status: draft.contact_status === "not_contacted" ? "contacted" as const : draft.contact_status,
+        last_contacted_at: sentAt,
+        updated_at: sentAt,
+      };
+      setDraft(next);
+      setSaved(next);
+      setPreparedEmailState({ action, status: "sent", message: "Запрос оплаты отправлен." });
+      return;
+    }
+
+    const next = {
+      ...draft,
+      status: "confirmed" as const,
+      payment_status: "paid" as const,
+      payment_amount: result.paymentAmount ?? 5_000,
+      paid_at: sentAt,
+      instructions_status: "sent" as const,
+      instructions_sent_at: draft.instructions_sent_at ?? sentAt,
+      contact_status: draft.contact_status === "not_contacted" ? "contacted" as const : draft.contact_status,
+      last_contacted_at: sentAt,
+      updated_at: sentAt,
+    };
+    setDraft(next);
+    setSaved(next);
+    if (result.guideUrl) {
+      setGuideUrl(result.guideUrl);
+      setGuideMessage(result.emailed ? "Личная ссылка отправлена на email." : result.message ?? "Скопируйте ссылку вручную.");
+      setGuideState(result.emailed ? "sent" : "partial");
+    }
+    setPreparedEmailState({
+      action,
+      status: result.emailed ? "sent" : "partial",
+      message: result.emailed
+        ? "Оплата подтверждена, место закреплено, guide отправлен."
+        : result.message ?? "Оплата сохранена, но письмо не отправилось.",
+    });
   }
 
   async function copyGuideUrl() {
@@ -246,6 +330,43 @@ function ParticipantCard({ participant }: { participant: Participant }) {
         <label><span>Внутренние заметки</span><textarea value={draft.notes} maxLength={5000} placeholder="Пожелания, договорённости, важный контекст…" onChange={(e) => update("notes", e.target.value)} /></label>
       </div>
 
+      <section className={styles.preparedEmailsSection}>
+        <div className={styles.preparedEmailsHeading}>
+          <div>
+            <strong>Готовые письма</strong>
+            <span>Отправляйте по порядку: запрос оплаты → подтверждение после проверки чека</span>
+          </div>
+          {preparedEmailState.message ? (
+            <p className={preparedEmailState.status === "error" ? styles.saveError : ""}>
+              {preparedEmailState.status === "error" ? <CircleAlert size={14} /> : <Check size={14} />}
+              {preparedEmailState.message}
+            </p>
+          ) : null}
+        </div>
+        <div className={styles.preparedEmailActions}>
+          <button
+            type="button"
+            onClick={() => sendPreparedEmail("payment_request")}
+            disabled={preparedEmailState.status === "sending" || draft.status === "cancelled"}
+          >
+            {preparedEmailState.action === "payment_request" && preparedEmailState.status === "sending"
+              ? <LoaderCircle className={styles.spin} size={16} />
+              : <CreditCard size={16} />}
+            1. Запросить оплату
+          </button>
+          <button
+            type="button"
+            onClick={() => sendPreparedEmail("payment_confirmation")}
+            disabled={preparedEmailState.status === "sending" || draft.status === "cancelled" || !isMobileWorkshop}
+          >
+            {preparedEmailState.action === "payment_confirmation" && preparedEmailState.status === "sending"
+              ? <LoaderCircle className={styles.spin} size={16} />
+              : <UserCheck size={16} />}
+            2. Подтвердить оплату и место
+          </button>
+        </div>
+      </section>
+
       <section className={styles.guideAccessSection}>
         <div className={styles.guideAccessSummary}>
           <div className={styles.guideAccessIcon}><BookOpen size={18} /></div>
@@ -257,7 +378,7 @@ function ParticipantCard({ participant }: { participant: Participant }) {
           </div>
           <button type="button" onClick={issueGuideAccess} disabled={guideState === "sending" || draft.status === "cancelled" || draft.status === "next_run"}>
             {guideState === "sending" ? <LoaderCircle className={styles.spin} size={15} /> : <Send size={15} />}
-            {guideState === "sending" ? "Отправляем…" : "Отправить доступ"}
+            {guideState === "sending" ? "Отправляем…" : "Переотправить доступ"}
           </button>
         </div>
         {guideUrl ? (
