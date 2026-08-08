@@ -59,7 +59,8 @@
 .guideAccessLink a { display: grid; place-items: center; width: 36px; border: 1px solid #4a5b31; border-radius: 8px; color: #c9ff27; background: #1a2414; }
 .guideAccessSection > p { margin: 10px 0 0; color: #98c97a; font-size: 9px; }
 .guideAccessSection > p.saveError { color: #ff9e94; }
-.telegramSection { margin: 17px 22px 0; border: 1px solid #293544; border-radius: 13px; background: #0b111a; }
+.telegramSection, .emailSection { margin: 17px 22px 0; border: 1px solid #293544; border-radius: 13px; background: #0b111a; }
+.emailSection { border-color: #3b3d54; background: #10101b; }
 .telegramSectionHeader { display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 13px 14px; }
 .telegramSectionHeader > div > span { display: flex; align-items: center; gap: 7px; color: #d9e3ef; font-size: 11px; font-weight: 900; }
 .telegramSectionHeader small { display: block; margin-top: 5px; color: #6f7c8e; font-size: 9px; }
@@ -73,7 +74,8 @@
 .telegramComposer label { display: block; }
 .telegramComposer label > span { display: block; margin-bottom: 7px; color: #7e8999; font-size: 9px; font-weight: 900; text-transform: uppercase; letter-spacing: .08em; }
 .telegramComposer textarea { display: block; width: 100%; min-height: 135px; padding: 12px; border: 1px solid #334052; border-radius: 10px; outline: 0; resize: vertical; color: #eef2f7; background: #080d14; font: inherit; font-size: 12px; line-height: 1.55; }
-.telegramComposer textarea:focus { border-color: #7651e6; box-shadow: 0 0 0 3px rgba(118,81,230,.18); }
+.messageSubject { display: block; width: 100%; height: 42px; margin-bottom: 12px; padding: 0 12px; border: 1px solid #334052; border-radius: 10px; outline: 0; color: #eef2f7; background: #080d14; font: inherit; font-size: 12px; }
+.telegramComposer textarea:focus, .messageSubject:focus { border-color: #7651e6; box-shadow: 0 0 0 3px rgba(118,81,230,.18); }
 .telegramComposer label > small { display: block; margin-top: 5px; color: #657183; font-size: 9px; text-align: right; }
 .telegramActions { display: flex; align-items: center; justify-content: flex-end; gap: 14px; margin-top: 10px; }
 .telegramActions p { display: flex; align-items: center; gap: 5px; margin: 0; color: #98c97a; font-size: 10px; }
@@ -126,7 +128,7 @@
   .guideAccessSummary > button { grid-column: 1 / -1; width: 100%; }
   .guideAccessLink { grid-template-columns: 1fr 36px; }
   .guideAccessLink button { grid-column: 1 / -1; grid-row: 2; }
-  .telegramSection { margin-inline: 17px; }
+  .telegramSection, .emailSection { margin-inline: 17px; }
   .telegramSectionHeader { align-items: flex-start; }
   .telegramActions { align-items: stretch; flex-direction: column; }
   .telegramActions > button { width: 100%; }

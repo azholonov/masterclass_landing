@@ -34,11 +34,20 @@ function messageTemplate(type: TelegramMessageType, participant: Participant) {
   return `${greeting}\n\n`;
 }
 
+function emailTemplate(participant: Participant) {
+  return `Здравствуйте, ${participant.name}!\n\n`;
+}
+
 function ParticipantCard({ participant }: { participant: Participant }) {
   const [draft, setDraft] = useState(participant);
   const [saved, setSaved] = useState(participant);
   const [state, setState] = useState<"idle" | "saving" | "saved" | "error">("idle");
   const [message, setMessage] = useState("");
+  const [emailOpen, setEmailOpen] = useState(false);
+  const [emailSubject, setEmailSubject] = useState("Мастер-класс: важная информация");
+  const [emailText, setEmailText] = useState("");
+  const [emailState, setEmailState] = useState<"idle" | "sending" | "sent" | "error">("idle");
+  const [emailError, setEmailError] = useState("");
   const [telegramOpen, setTelegramOpen] = useState(false);
   const [telegramType, setTelegramType] = useState<TelegramMessageType>("announcement");
   const [telegramText, setTelegramText] = useState("");
@@ -87,6 +96,51 @@ function ParticipantCard({ participant }: { participant: Participant }) {
   const telegramUrl = draft.telegram
     ? `https://t.me/${draft.telegram.replace(/^@/, "")}`
     : null;
+
+  function toggleEmail() {
+    setEmailOpen((open) => {
+      if (!open && !emailText) setEmailText(emailTemplate(draft));
+      return !open;
+    });
+    setEmailState("idle");
+    setEmailError("");
+  }
+
+  async function sendEmail() {
+    const subject = emailSubject.trim();
+    const text = emailText.trim();
+    if (!subject || !text || !window.confirm(`Отправить письмо участнику ${draft.name} на ${draft.contact}?`)) return;
+
+    setEmailState("sending");
+    setEmailError("");
+    const response = await fetch(`/api/crm/participants/${participant.id}/email`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ subject, text }),
+    });
+    const result = (await response.json()) as { message?: string; sentAt?: string };
+    if (!response.ok) {
+      setEmailState("error");
+      setEmailError(result.message ?? "Не удалось отправить письмо.");
+      if (response.status === 401) window.location.assign("/crm/login");
+      return;
+    }
+
+    const sentAt = result.sentAt ?? new Date().toISOString();
+    setDraft((current) => ({
+      ...current,
+      contact_status: current.contact_status === "not_contacted" ? "contacted" : current.contact_status,
+      last_contacted_at: sentAt,
+      updated_at: sentAt,
+    }));
+    setSaved((current) => ({
+      ...current,
+      contact_status: current.contact_status === "not_contacted" ? "contacted" : current.contact_status,
+      last_contacted_at: sentAt,
+      updated_at: sentAt,
+    }));
+    setEmailState("sent");
+  }
 
   function chooseTelegramTemplate(type: TelegramMessageType) {
     setTelegramType(type);
@@ -214,6 +268,54 @@ function ParticipantCard({ participant }: { participant: Participant }) {
           </div>
         ) : null}
         {guideMessage ? <p className={guideState === "error" ? styles.saveError : ""}>{guideMessage}</p> : null}
+      </section>
+
+      <section className={styles.emailSection}>
+        <div className={styles.telegramSectionHeader}>
+          <div>
+            <span><Mail size={15} /> Email-сообщение</span>
+            <small>{draft.contact}</small>
+          </div>
+          <button type="button" onClick={toggleEmail}>
+            <Mail size={14} /> {emailOpen ? "Закрыть" : "Написать"}
+          </button>
+        </div>
+
+        {emailOpen ? (
+          <div className={styles.telegramComposer}>
+            <label>
+              <span>Тема письма</span>
+              <input
+                className={styles.messageSubject}
+                value={emailSubject}
+                maxLength={160}
+                onChange={(event) => { setEmailSubject(event.target.value); setEmailState("idle"); }}
+                placeholder="Введите тему…"
+              />
+            </label>
+            <label>
+              <span>Сообщение</span>
+              <textarea
+                value={emailText}
+                maxLength={10000}
+                onChange={(event) => { setEmailText(event.target.value); setEmailState("idle"); }}
+                placeholder="Введите сообщение…"
+                autoFocus
+              />
+              <small>{emailText.length} / 10 000</small>
+            </label>
+            <div className={styles.telegramActions}>
+              <p className={emailState === "error" ? styles.saveError : ""}>
+                {emailState === "sent" ? <><Check size={14} /> Письмо отправлено</> : null}
+                {emailState === "error" ? <><CircleAlert size={14} /> {emailError}</> : null}
+              </p>
+              <button type="button" onClick={sendEmail} disabled={!emailSubject.trim() || !emailText.trim() || emailState === "sending"}>
+                {emailState === "sending" ? <LoaderCircle className={styles.spin} size={15} /> : <Send size={15} />}
+                {emailState === "sending" ? "Отправляем…" : "Отправить по email"}
+              </button>
+            </div>
+          </div>
+        ) : null}
       </section>
 
       <section className={styles.telegramSection}>

@@ -4,6 +4,7 @@ export const workshops = {
     date: "2026-жылдын 14-августу",
     format: "кыргыз тилинде, Бишкекте офлайн",
     capacity: 12,
+    registrationOpen: false,
     price: "5 000 сом",
   },
   vibecoding: {
@@ -11,6 +12,7 @@ export const workshops = {
     date: "15 августа 2026",
     format: "на русском языке, офлайн в Бишкеке",
     capacity: 12,
+    registrationOpen: false,
     price: "5 000 сом",
   },
   "token-economics": {
@@ -18,6 +20,7 @@ export const workshops = {
     date: "16 августа 2026",
     format: "онлайн",
     capacity: 16,
+    registrationOpen: false,
   },
 } as const;
 

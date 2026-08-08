@@ -184,6 +184,7 @@ set search_path = public
 as $$
 declare
   workshop_capacity integer;
+  registration_open boolean;
   occupied_places integer;
   assigned_status text;
 begin
@@ -198,6 +199,14 @@ begin
     raise exception 'Unknown workshop';
   end if;
 
+  -- The August 2026 cohort is closed. New applications go to the waitlist.
+  registration_open := case participant_workshop
+    when 'vibecoding-kg' then false
+    when 'vibecoding' then false
+    when 'token-economics' then false
+    else false
+  end;
+
   -- Serialize registrations per workshop so concurrent requests cannot overbook it.
   perform pg_advisory_xact_lock(hashtext(participant_workshop));
 
@@ -207,6 +216,7 @@ begin
     and status in ('new', 'confirmed');
 
   assigned_status := case
+    when not registration_open then 'next_run'
     when occupied_places >= workshop_capacity then 'next_run'
     else 'new'
   end;

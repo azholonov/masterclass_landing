@@ -183,3 +183,9 @@
 - [x] Remove the organizer login action from the participant access page.
 - [x] Remove public organizer access instructions.
 - [x] Validate the production build.
+
+## Phase 34 — Close Current Cohort and CRM Email
+- [x] Close both current sessions and route every new application to the waitlist.
+- [x] Add one-to-one email messaging to participant cards in the CRM.
+- [x] Validate the production build.
+- [ ] Apply the updated registration function to Supabase and redeploy.

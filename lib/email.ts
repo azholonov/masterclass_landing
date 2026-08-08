@@ -106,3 +106,25 @@ export async function sendGuideAccessEmail(input: {
     `,
   });
 }
+
+export async function sendCrmEmail(input: {
+  name: string;
+  email: string;
+  subject: string;
+  text: string;
+}) {
+  const { user, transporter } = createMailTransporter();
+  const htmlBody = escapeHtml(input.text).replaceAll("\n", "<br>");
+
+  await transporter.sendMail({
+    from: `Мастерская <${user}>`,
+    to: input.email,
+    subject: input.subject,
+    text: input.text,
+    html: `
+      <div style="font-family:Arial,sans-serif;line-height:1.6;color:#171717;max-width:600px">
+        <p>${htmlBody}</p>
+      </div>
+    `,
+  });
+}

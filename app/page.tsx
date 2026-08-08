@@ -37,7 +37,7 @@ const workshopSessions = [
       "AI куралдары менен тиркеменин иштеген прототибин түзөбүз. Идеяны ойлоп табабыз, чогултабыз жана иштетебиз — узак лекцияларсыз.",
     features: ["Идеяны жана MVPни аныктайбыз", "Интерфейсти түзөбүз", "Телефондо иштетебиз"],
     meta: ["2 саат", "офлайн"],
-    capacityLabel: "Болгону 12 орун",
+    capacityLabel: "Каттоо жабык · Waitlist",
     image: "/art/vibecoding-robot.png",
     alt: "Робот санарип өсүмдүктүн жанында тиркеме программалап жатат",
     tone: "lime",
@@ -55,7 +55,7 @@ const workshopSessions = [
       "Соберём рабочий прототип приложения с AI-инструментами. Придумали, написали, запустили — без двухчасовых лекций.",
     features: ["Выберем идею и MVP", "Соберём интерфейс", "Запустим на телефоне"],
     meta: ["2 часа", "офлайн"],
-    capacityLabel: "Только 12 мест",
+    capacityLabel: "Набор закрыт · Waitlist",
     image: "/art/vibecoding-robot.png",
     alt: "Робот программирует приложение рядом с цифровым растением",
     tone: "violet",
@@ -113,8 +113,8 @@ const productStory = [
 
 async function getWorkshopAvailability(): Promise<Record<WorkshopId, boolean>> {
   const availability: Record<WorkshopId, boolean> = {
-    "vibecoding-kg": true,
-    vibecoding: true,
+    "vibecoding-kg": workshopDetails["vibecoding-kg"].registrationOpen,
+    vibecoding: workshopDetails.vibecoding.registrationOpen,
     "token-economics": false,
   };
   const supabase = createSupabaseAdmin();
@@ -122,6 +122,11 @@ async function getWorkshopAvailability(): Promise<Record<WorkshopId, boolean>> {
 
   await Promise.all(
     (Object.keys(workshopDetails) as WorkshopId[]).map(async (workshop) => {
+      if (!workshopDetails[workshop].registrationOpen) {
+        availability[workshop] = false;
+        return;
+      }
+
       const { count, error } = await supabase
         .from("workshop_registrations")
         .select("id", { count: "exact", head: true })
@@ -338,10 +343,10 @@ export default async function Home() {
       <section className="registration section" id="registration">
         <div className="container registration-grid">
           <div className="registration-copy">
-            <div className="registration-tag"><UsersRound size={15} /> Только 12 мест на каждом мастер-классе</div>
-            <h2>ЗАЙМИ<br /><span>СВОЁ МЕСТО.</span></h2>
+            <div className="registration-tag"><UsersRound size={15} /> Текущий набор закрыт · доступен waitlist</div>
+            <h2>ВСТАНЬ<br /><span>В WAITLIST.</span></h2>
             <div className="registration-price"><strong>{workshopDetails.vibecoding.price}</strong><span>за участие</span></div>
-            <p>Оставь контакт, чтобы забронировать место. Пришлём все детали — без спама и длинных цепочек писем.</p>
+            <p>В текущей группе уже 5 участников. Оставь контакт — сообщим первым, когда откроется следующий набор.</p>
             <a href="mailto:soloapps.dev@gmail.com">Есть вопрос? Напиши нам <ArrowRight size={17} /></a>
           </div>
           <RegistrationForm availability={availability} />

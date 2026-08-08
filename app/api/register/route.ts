@@ -4,7 +4,7 @@ import { createSupabaseAdmin } from "@/lib/supabase";
 import { sendWelcomeEmail } from "@/lib/email";
 import { getGuideAccessUrl } from "@/lib/guide-auth";
 import { notifyAdminAboutRegistration } from "@/lib/telegram";
-import { isWorkshopId, type RegistrationStatus } from "@/lib/workshops";
+import { isWorkshopId, workshops, type RegistrationStatus } from "@/lib/workshops";
 import {
   consumeRateLimit,
   getClientIp,
@@ -145,7 +145,23 @@ export async function POST(request: Request) {
     return NextResponse.json({ message: "Не удалось отправить заявку. Попробуйте ещё раз." }, { status: 500 });
   }
 
-  const registrationStatus: RegistrationStatus = registration.status === "next_run" ? "next_run" : "new";
+  let registrationStatus: RegistrationStatus = registration.status === "next_run" ? "next_run" : "new";
+  if (registration.created && !workshops[workshop].registrationOpen && registrationStatus !== "next_run") {
+    const now = new Date().toISOString();
+    const { error: waitlistUpdateError } = await supabase
+      .from("workshop_registrations")
+      .update({ status: "next_run", updated_at: now })
+      .eq("id", registration.id);
+
+    if (waitlistUpdateError) {
+      console.error("Registration waitlist update error:", waitlistUpdateError.code);
+      return NextResponse.json(
+        { message: "Не удалось добавить заявку в waitlist. Попробуйте ещё раз." },
+        { status: 500 },
+      );
+    }
+    registrationStatus = "next_run";
+  }
   const isNextRun = registrationStatus === "next_run";
   const guideUrl = registration.created && !isNextRun
     ? getGuideAccessUrl(guideAccessToken, request.url) ?? undefined
