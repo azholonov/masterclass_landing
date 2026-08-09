@@ -38,6 +38,10 @@ The participant guide is available only through a personal email link or an acti
 CRM administrator session. Applying `supabase/schema.sql` adds hashed guide tokens
 and per-participant checklist progress. A newly issued CRM link revokes the old one.
 
+Receipt uploads use one-time email links. Applying `supabase/schema.sql` creates the
+private `payment-receipts` Storage bucket, the receipt metadata table, and the hashed
+upload-token column. CRM file links are signed and expire after 10 minutes.
+
 Create a Cloudflare Turnstile widget for the production hostname and add its site key
 and secret key to Vercel. Registration fails closed when either Turnstile key is missing.
 

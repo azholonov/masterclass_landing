@@ -2,7 +2,7 @@
 
 ## Summary
 - Russian-language landing page for workshop registration.
-- Current phase: Phase 36 — CRM payment emails ready; deployment pending.
+- Current phase: Phase 37 — receipt upload ready; migration and deployment pending.
 - Workshop: mobile vibe coding.
 
 ## Key Paths
@@ -14,6 +14,7 @@
 - `public/art/` — generated robot and botanical artwork.
 - `lib/supabase.ts` — Supabase server client.
 - `supabase/schema.sql` — database schema and RLS policy.
+- `app/api/payment-receipts/` — secure one-time receipt upload endpoint.
 - `DEVELOPMENT_PLAN.md` — numbered delivery phases.
 
 ## Tech Stack

@@ -202,3 +202,13 @@
 - [x] Add the two ordered email actions to each CRM participant card.
 - [x] Validate the production build.
 - [ ] Deploy and smoke-test Gmail and Telegram delivery in production.
+
+## Phase 37 — Payment Receipt Uploads
+- [x] Add a prepared email with a one-time personal receipt-upload link.
+- [x] Add a protected upload page and dedicated receipt API endpoint.
+- [x] Store files in a private Supabase bucket and metadata in PostgreSQL.
+- [x] Show uploaded receipts through short-lived signed links in the CRM.
+- [x] Mark submitted receipts approved when payment is confirmed.
+- [x] Validate file size, MIME type, content signature, and production build.
+- [ ] Apply the receipt schema to production Supabase.
+- [ ] Deploy and smoke-test the full receipt workflow.

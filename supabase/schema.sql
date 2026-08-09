@@ -19,6 +19,7 @@ create table if not exists public.workshop_registrations (
 alter table public.workshop_registrations
   add column if not exists telegram_chat_id bigint,
   add column if not exists telegram_start_token_hash text,
+  add column if not exists payment_receipt_upload_token_hash text,
   add column if not exists guide_access_token_hash text,
   add column if not exists guide_completed_items text[] not null default '{}',
   add column if not exists guide_progress_updated_at timestamptz,
@@ -97,6 +98,49 @@ alter table public.workshop_registrations
         'laptop', 'space', 'ai', 'phone', 'accounts', 'doctor', 'device', 'hello'
       ]::text[]
     );
+
+alter table public.workshop_registrations
+  drop constraint if exists workshop_registrations_payment_receipt_token_hash_check;
+
+alter table public.workshop_registrations
+  add constraint workshop_registrations_payment_receipt_token_hash_check
+    check (payment_receipt_upload_token_hash is null or payment_receipt_upload_token_hash ~ '^[0-9a-f]{64}$');
+
+create table if not exists public.payment_receipts (
+  id uuid primary key default gen_random_uuid(),
+  created_at timestamptz not null default now(),
+  participant_id uuid not null references public.workshop_registrations(id) on delete cascade,
+  storage_path text not null unique check (char_length(storage_path) between 10 and 500),
+  original_filename text not null check (char_length(original_filename) between 1 and 180),
+  content_type text not null check (content_type in ('image/jpeg', 'image/png', 'image/webp', 'application/pdf')),
+  file_size integer not null check (file_size between 1 and 3145728),
+  review_status text not null default 'submitted' check (review_status in ('submitted', 'approved', 'rejected')),
+  reviewed_at timestamptz
+);
+
+alter table public.payment_receipts enable row level security;
+revoke all on table public.payment_receipts from public, anon, authenticated;
+grant select, insert, update, delete on table public.payment_receipts to service_role;
+
+create index if not exists payment_receipts_participant_created_at_idx
+  on public.payment_receipts (participant_id, created_at desc);
+
+create unique index if not exists workshop_registrations_payment_receipt_token_idx
+  on public.workshop_registrations (payment_receipt_upload_token_hash)
+  where payment_receipt_upload_token_hash is not null;
+
+insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+values (
+  'payment-receipts',
+  'payment-receipts',
+  false,
+  3145728,
+  array['image/jpeg', 'image/png', 'image/webp', 'application/pdf']
+)
+on conflict (id) do update set
+  public = excluded.public,
+  file_size_limit = excluded.file_size_limit,
+  allowed_mime_types = excluded.allowed_mime_types;
 
 create table if not exists public.api_rate_limits (
   action text not null,

@@ -1,7 +1,8 @@
 import { createHash, randomBytes } from "crypto";
 import { NextRequest, NextResponse } from "next/server";
 import { CRM_SESSION_COOKIE, verifyCrmSession } from "@/lib/crm-auth";
-import { sendCrmEmail, sendPaymentRequestEmail } from "@/lib/email";
+import { sendCrmEmail, sendPaymentRequestEmail, sendReceiptUploadEmail } from "@/lib/email";
+import { getPaymentReceiptUploadUrl } from "@/lib/payment-receipts";
 import { readJsonBody } from "@/lib/request-security";
 import { createSupabaseAdmin } from "@/lib/supabase";
 
@@ -34,7 +35,9 @@ export async function POST(request: NextRequest, context: { params: Promise<{ id
     );
   }
 
-  const template = body.value.template === "payment_request" ? "payment_request" : null;
+  const template = body.value.template === "payment_request" || body.value.template === "receipt_upload"
+    ? body.value.template
+    : null;
   const subject = typeof body.value.subject === "string" ? body.value.subject.trim() : "";
   const text = typeof body.value.text === "string" ? body.value.text.trim() : "";
   if (!template) {
@@ -87,6 +90,26 @@ export async function POST(request: NextRequest, context: { params: Promise<{ id
         name: participant.name,
         email: participant.contact,
         telegramBotUrl,
+      });
+    } else if (template === "receipt_upload") {
+      const receiptToken = randomBytes(32).toString("base64url");
+      const tokenHash = createHash("sha256").update(receiptToken).digest("hex");
+      const receiptUploadUrl = getPaymentReceiptUploadUrl(receiptToken, request.url);
+      if (!receiptUploadUrl) {
+        return NextResponse.json({ message: "Настройте NEXT_PUBLIC_SITE_URL." }, { status: 503 });
+      }
+      const { error: tokenUpdateError } = await supabase
+        .from("workshop_registrations")
+        .update({ payment_receipt_upload_token_hash: tokenHash, updated_at: new Date().toISOString() })
+        .eq("id", id);
+      if (tokenUpdateError) {
+        console.error("CRM receipt email token error:", tokenUpdateError.code);
+        return NextResponse.json({ message: "Не удалось создать ссылку. Примените актуальную схему Supabase." }, { status: 503 });
+      }
+      await sendReceiptUploadEmail({
+        name: participant.name,
+        email: participant.contact,
+        receiptUploadUrl,
       });
     } else {
       await sendCrmEmail({ name: participant.name, email: participant.contact, subject, text });

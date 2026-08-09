@@ -1,0 +1,27 @@
+.page { min-height: 100vh; display: grid; place-items: center; padding: 70px 20px; color: #f7f8f2; background: radial-gradient(circle at 20% 15%, #302052 0, transparent 32%), #070b12; }
+.back { position: absolute; top: 25px; left: 28px; display: inline-flex; align-items: center; gap: 7px; color: #9aa3b1; font-size: 12px; }
+.card { width: min(560px, 100%); padding: 36px; border: 1px solid #31394a; border-radius: 24px; background: #111720; box-shadow: 0 30px 90px rgba(0,0,0,.32); }
+.icon { display: grid; place-items: center; width: 54px; height: 54px; margin-bottom: 24px; border-radius: 15px; color: #111; background: #c9ff27; }
+.kicker { margin: 0 0 10px; color: #c9ff27; font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: .13em; }
+.card h1 { margin: 0; color: #fff; font-size: clamp(44px, 9vw, 66px); line-height: .9; letter-spacing: -.06em; text-transform: uppercase; }
+.card h1 em { color: #a98bff; font-style: normal; }
+.lead { margin: 22px 0; color: #a3acb9; font-size: 14px; line-height: 1.6; }
+.uploadForm { display: grid; gap: 12px; }
+.uploadForm label { position: relative; display: grid; justify-items: center; gap: 7px; padding: 25px 18px; border: 1px dashed #596578; border-radius: 14px; color: #c9ff27; background: #0a1018; cursor: pointer; text-align: center; }
+.uploadForm label span { max-width: 100%; overflow: hidden; color: #edf1f6; font-size: 12px; font-weight: 800; text-overflow: ellipsis; white-space: nowrap; }
+.uploadForm label small { color: #788393; font-size: 10px; }
+.uploadForm input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+.uploadForm button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; border: 0; border-radius: 11px; color: #111; background: #c9ff27; font: inherit; font-size: 12px; font-weight: 900; cursor: pointer; }
+.uploadForm button:disabled { opacity: .4; cursor: default; }
+.error { margin: 0; color: #ffaaa1; font-size: 11px; }
+.success { display: flex; align-items: flex-start; gap: 10px; margin-top: 24px; padding: 18px; border: 1px solid #4d6430; border-radius: 13px; color: #c9ff27; background: #151f10; }
+.success p { margin: 0; color: #d9e8c8; font-size: 13px; line-height: 1.5; }
+.invalid { margin-top: 24px; padding: 17px; border: 1px solid #654038; border-radius: 12px; color: #ffc1b8; background: #2a1817; font-size: 13px; line-height: 1.55; }
+.spin { animation: spin .8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+@media (max-width: 620px) {
+  .page { padding: 58px 12px 24px; }
+  .back { top: 18px; left: 17px; }
+  .card { padding: 25px 20px; border-radius: 19px; }
+}

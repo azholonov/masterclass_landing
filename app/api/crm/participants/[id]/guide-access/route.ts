@@ -91,6 +91,15 @@ export async function POST(request: NextRequest, context: { params: Promise<{ id
     );
   }
 
+  if (isPaymentConfirmation) {
+    const { error: receiptUpdateError } = await supabase
+      .from("payment_receipts")
+      .update({ review_status: "approved", reviewed_at: now })
+      .eq("participant_id", id)
+      .eq("review_status", "submitted");
+    if (receiptUpdateError) console.error("CRM receipt approval error:", receiptUpdateError.code);
+  }
+
   try {
     const emailInput = {
       name: participant.name,

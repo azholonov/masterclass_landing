@@ -186,6 +186,39 @@ export async function sendPaymentConfirmationEmail(input: {
   });
 }
 
+export async function sendReceiptUploadEmail(input: {
+  name: string;
+  email: string;
+  receiptUploadUrl: string;
+}) {
+  const { user, transporter } = createMailTransporter();
+
+  await transporter.sendMail({
+    from: `Мастерская <${user}>`,
+    to: input.email,
+    subject: "Если вы оплатили — загрузите чек",
+    text: [
+      `Здравствуйте, ${input.name}!`,
+      "",
+      "Если вы уже оплатили участие в мастер-классе, загрузите фотографию или PDF-файл чека по персональной ссылке:",
+      input.receiptUploadUrl,
+      "",
+      "Ссылка одноразовая и предназначена только для вашего чека.",
+      "После проверки оплаты мы закрепим место и отправим личную инструкцию по подготовке.",
+    ].join("\n"),
+    html: `
+      <div style="font-family:Arial,sans-serif;line-height:1.6;color:#171717;max-width:600px">
+        <h2>Уже оплатили?</h2>
+        <p>Здравствуйте, ${escapeHtml(input.name)}!</p>
+        <p>Загрузите фотографию или PDF-файл чека по персональной ссылке:</p>
+        <p><a href="${escapeHtml(input.receiptUploadUrl)}" style="display:inline-block;padding:12px 18px;border-radius:10px;background:#c9ff27;color:#111;text-decoration:none;font-weight:700">Загрузить чек</a></p>
+        <p>После проверки оплаты мы закрепим место и отправим личную инструкцию по подготовке.</p>
+        <p style="font-size:12px;color:#777">Ссылка одноразовая и предназначена только для вашего чека.</p>
+      </div>
+    `,
+  });
+}
+
 export async function sendCrmEmail(input: {
   name: string;
   email: string;

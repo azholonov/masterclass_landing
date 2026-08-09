@@ -3,8 +3,8 @@
 import { useMemo, useState } from "react";
 import {
   Banknote, BookOpen, CalendarClock, Check, CircleAlert, Copy, CreditCard, ExternalLink,
-  LoaderCircle, Mail, Megaphone, MessageCircle, MessageSquareText, Save, Search, Send,
-  UserCheck, Users,
+  Eye, FileText, LoaderCircle, Mail, Megaphone, MessageCircle, MessageSquareText, Save,
+  Search, Send, Upload, UserCheck, Users,
 } from "lucide-react";
 import type { Participant, TelegramMessageType } from "@/lib/crm";
 import styles from "./crm.module.css";
@@ -18,6 +18,16 @@ const labels = {
 } as const;
 
 type Filter = "all" | "unpaid" | "instructions" | "contact" | "confirmed";
+type PreparedEmailAction = "payment_request" | "receipt_upload" | "payment_confirmation";
+type PaymentReceipt = {
+  id: string;
+  createdAt: string;
+  filename: string;
+  contentType: string;
+  fileSize: number;
+  reviewStatus: "submitted" | "approved" | "rejected";
+  url: string | null;
+};
 
 const telegramTypeLabels: Record<TelegramMessageType, string> = {
   announcement: "Объявление",
@@ -57,10 +67,14 @@ function ParticipantCard({ participant }: { participant: Participant }) {
   const [guideMessage, setGuideMessage] = useState("");
   const [guideUrl, setGuideUrl] = useState("");
   const [preparedEmailState, setPreparedEmailState] = useState<{
-    action: "payment_request" | "payment_confirmation" | null;
+    action: PreparedEmailAction | null;
     status: "idle" | "sending" | "sent" | "partial" | "error";
     message: string;
   }>({ action: null, status: "idle", message: "" });
+  const [receiptsOpen, setReceiptsOpen] = useState(false);
+  const [receiptsState, setReceiptsState] = useState<"idle" | "loading" | "loaded" | "error">("idle");
+  const [receipts, setReceipts] = useState<PaymentReceipt[]>([]);
+  const [receiptsError, setReceiptsError] = useState("");
   const isDirty = JSON.stringify(draft) !== JSON.stringify(saved);
   const isMobileWorkshop = draft.workshop === "vibecoding" || draft.workshop === "vibecoding-kg";
 
@@ -219,22 +233,24 @@ function ParticipantCard({ participant }: { participant: Participant }) {
     setGuideMessage(result.emailed ? "Личная ссылка отправлена на email." : result.message ?? "Скопируйте ссылку вручную.");
   }
 
-  async function sendPreparedEmail(action: "payment_request" | "payment_confirmation") {
+  async function sendPreparedEmail(action: PreparedEmailAction) {
     const confirmation = action === "payment_request"
       ? `Отправить ${draft.name} письмо с реквизитами MBANK и ссылкой на Telegram-бот?`
-      : `Оплата от ${draft.name} проверена? Письмо закрепит место, отметит 5 000 сом как оплаченные и выдаст доступ к guide.`;
+      : action === "receipt_upload"
+        ? `Отправить ${draft.name} одноразовую ссылку для загрузки чека?`
+        : `Оплата от ${draft.name} проверена? Письмо закрепит место, отметит 5 000 сом как оплаченные и выдаст доступ к guide.`;
     if (!window.confirm(confirmation)) return;
 
     setPreparedEmailState({ action, status: "sending", message: "" });
-    const isPaymentRequest = action === "payment_request";
+    const isPaymentConfirmation = action === "payment_confirmation";
     const response = await fetch(
-      `/api/crm/participants/${participant.id}/${isPaymentRequest ? "email" : "guide-access"}`,
+      `/api/crm/participants/${participant.id}/${isPaymentConfirmation ? "guide-access" : "email"}`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(isPaymentRequest
-          ? { template: "payment_request" }
-          : { emailType: "payment_confirmation" }),
+        body: JSON.stringify(isPaymentConfirmation
+          ? { emailType: "payment_confirmation" }
+          : { template: action }),
       },
     );
     const result = (await response.json()) as {
@@ -252,7 +268,7 @@ function ParticipantCard({ participant }: { participant: Participant }) {
     }
 
     const sentAt = result.sentAt ?? new Date().toISOString();
-    if (isPaymentRequest) {
+    if (!isPaymentConfirmation) {
       const next = {
         ...draft,
         contact_status: draft.contact_status === "not_contacted" ? "contacted" as const : draft.contact_status,
@@ -261,7 +277,11 @@ function ParticipantCard({ participant }: { participant: Participant }) {
       };
       setDraft(next);
       setSaved(next);
-      setPreparedEmailState({ action, status: "sent", message: "Запрос оплаты отправлен." });
+      setPreparedEmailState({
+        action,
+        status: "sent",
+        message: action === "payment_request" ? "Запрос оплаты отправлен." : "Ссылка для загрузки чека отправлена.",
+      });
       return;
     }
 
@@ -291,6 +311,27 @@ function ParticipantCard({ participant }: { participant: Participant }) {
         ? "Оплата подтверждена, место закреплено, guide отправлен."
         : result.message ?? "Оплата сохранена, но письмо не отправилось.",
     });
+  }
+
+  async function loadReceipts() {
+    if (receiptsOpen) {
+      setReceiptsOpen(false);
+      return;
+    }
+
+    setReceiptsOpen(true);
+    setReceiptsState("loading");
+    setReceiptsError("");
+    const response = await fetch(`/api/crm/participants/${participant.id}/receipts`, { cache: "no-store" });
+    const result = (await response.json()) as { message?: string; receipts?: PaymentReceipt[] };
+    if (!response.ok) {
+      setReceiptsState("error");
+      setReceiptsError(result.message ?? "Не удалось загрузить чеки.");
+      if (response.status === 401) window.location.assign("/crm/login");
+      return;
+    }
+    setReceipts(result.receipts ?? []);
+    setReceiptsState("loaded");
   }
 
   async function copyGuideUrl() {
@@ -334,7 +375,7 @@ function ParticipantCard({ participant }: { participant: Participant }) {
         <div className={styles.preparedEmailsHeading}>
           <div>
             <strong>Готовые письма</strong>
-            <span>Отправляйте по порядку: запрос оплаты → подтверждение после проверки чека</span>
+            <span>Запрос оплаты → ссылка на чек → подтверждение после проверки</span>
           </div>
           {preparedEmailState.message ? (
             <p className={preparedEmailState.status === "error" ? styles.saveError : ""}>
@@ -356,14 +397,49 @@ function ParticipantCard({ participant }: { participant: Participant }) {
           </button>
           <button
             type="button"
+            onClick={() => sendPreparedEmail("receipt_upload")}
+            disabled={preparedEmailState.status === "sending" || draft.status === "cancelled"}
+          >
+            {preparedEmailState.action === "receipt_upload" && preparedEmailState.status === "sending"
+              ? <LoaderCircle className={styles.spin} size={16} />
+              : <Upload size={16} />}
+            2. Запросить чек
+          </button>
+          <button
+            type="button"
             onClick={() => sendPreparedEmail("payment_confirmation")}
             disabled={preparedEmailState.status === "sending" || draft.status === "cancelled" || !isMobileWorkshop}
           >
             {preparedEmailState.action === "payment_confirmation" && preparedEmailState.status === "sending"
               ? <LoaderCircle className={styles.spin} size={16} />
               : <UserCheck size={16} />}
-            2. Подтвердить оплату и место
+            3. Подтвердить оплату и место
           </button>
+        </div>
+        <div className={styles.receiptsPanel}>
+          <button type="button" onClick={loadReceipts} disabled={receiptsState === "loading"}>
+            {receiptsState === "loading" ? <LoaderCircle className={styles.spin} size={15} /> : <FileText size={15} />}
+            {receiptsOpen ? "Скрыть загруженные чеки" : "Показать загруженные чеки"}
+          </button>
+          {receiptsOpen ? (
+            <div className={styles.receiptsList}>
+              {receiptsState === "error" ? <p className={styles.saveError}>{receiptsError}</p> : null}
+              {receiptsState === "loaded" && !receipts.length ? <p>Загруженных чеков пока нет.</p> : null}
+              {receipts.map((receipt) => (
+                <div key={receipt.id}>
+                  <FileText size={16} />
+                  <span>
+                    <strong>{receipt.filename}</strong>
+                    <small>
+                      {new Intl.DateTimeFormat("ru-RU", { dateStyle: "medium", timeStyle: "short", timeZone: "Asia/Bishkek" }).format(new Date(receipt.createdAt))}
+                      {` · ${(receipt.fileSize / 1024).toFixed(0)} КБ · ${receipt.reviewStatus === "approved" ? "подтверждён" : "ожидает проверки"}`}
+                    </small>
+                  </span>
+                  {receipt.url ? <a href={receipt.url} target="_blank" rel="noreferrer"><Eye size={14} /> Открыть</a> : <em>Файл недоступен</em>}
+                </div>
+              ))}
+            </div>
+          ) : null}
         </div>
       </section>
 

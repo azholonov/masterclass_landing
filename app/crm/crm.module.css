@@ -53,10 +53,22 @@
 .preparedEmailsHeading span { display: block; margin-top: 5px; color: #8f82a5; font-size: 9px; }
 .preparedEmailsHeading p { display: flex; align-items: center; gap: 5px; margin: 0; color: #98c97a; font-size: 10px; text-align: right; }
 .preparedEmailsHeading p.saveError { color: #ff9e94; }
-.preparedEmailActions { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin-top: 14px; }
+.preparedEmailActions { display: grid; grid-template-columns: repeat(3, 1fr); gap: 9px; margin-top: 14px; }
 .preparedEmailActions button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 42px; padding: 0 13px; border: 1px solid #5b4b7b; border-radius: 9px; color: #e7dcfa; background: #251b37; font-size: 10px; font-weight: 900; cursor: pointer; }
 .preparedEmailActions button:last-child { color: #10140a; border-color: #c9ff27; background: #c9ff27; }
 .preparedEmailActions button:disabled { opacity: .38; cursor: default; }
+.receiptsPanel { margin-top: 12px; padding-top: 12px; border-top: 1px solid #382c4d; }
+.receiptsPanel > button { display: inline-flex; align-items: center; gap: 7px; min-height: 34px; padding: 0 10px; border: 1px solid #4f416a; border-radius: 8px; color: #cfc2e5; background: #1d162a; font-size: 9px; font-weight: 850; cursor: pointer; }
+.receiptsPanel > button:disabled { opacity: .4; }
+.receiptsList { display: grid; gap: 7px; margin-top: 10px; }
+.receiptsList > p { margin: 0; color: #90859f; font-size: 10px; }
+.receiptsList > p.saveError { color: #ff9e94; }
+.receiptsList > div { display: grid; grid-template-columns: 20px 1fr auto; gap: 8px; align-items: center; padding: 10px; border-radius: 9px; color: #b8a9cf; background: #0f0b16; }
+.receiptsList span { min-width: 0; }
+.receiptsList strong { display: block; overflow: hidden; color: #eee8f8; font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
+.receiptsList small { display: block; margin-top: 4px; color: #786d87; font-size: 8px; }
+.receiptsList a { display: inline-flex; align-items: center; gap: 5px; padding: 7px 8px; border: 1px solid #53456c; border-radius: 7px; color: #d9cdf0; font-size: 9px; font-weight: 850; }
+.receiptsList em { color: #806f78; font-size: 8px; font-style: normal; }
 .guideAccessSection { margin: 17px 22px 0; padding: 14px; border: 1px solid #394627; border-radius: 13px; background: #10170d; }
 .guideAccessSummary { display: grid; grid-template-columns: 38px 1fr auto; gap: 11px; align-items: center; }
 .guideAccessIcon { display: grid; place-items: center; width: 38px; height: 38px; border-radius: 10px; color: #111; background: #c9ff27; }
@@ -137,6 +149,8 @@
   .preparedEmailsHeading { display: block; }
   .preparedEmailsHeading p { margin-top: 10px; text-align: left; }
   .preparedEmailActions { grid-template-columns: 1fr; }
+  .receiptsList > div { grid-template-columns: 20px 1fr; }
+  .receiptsList a, .receiptsList em { grid-column: 2; justify-self: start; }
   .guideAccessSection { margin-inline: 17px; }
   .guideAccessSummary { grid-template-columns: 38px 1fr; }
   .guideAccessSummary > button { grid-column: 1 / -1; width: 100%; }
