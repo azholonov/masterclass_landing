@@ -212,3 +212,7 @@
 - [x] Validate file size, MIME type, content signature, and production build.
 - [ ] Apply the receipt schema to production Supabase.
 - [ ] Deploy and smoke-test the full receipt workflow.
+
+## Phase 38 — Receipt Email Clarification
+- [x] Explain that Telegram-bot disruptions require receipt upload through the personal link.
+- [ ] Deploy and verify the updated email in production.

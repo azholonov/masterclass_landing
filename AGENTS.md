@@ -2,7 +2,7 @@
 
 ## Summary
 - Russian-language landing page for workshop registration.
-- Current phase: Phase 37 — receipt upload ready; migration and deployment pending.
+- Current phase: Phase 38 — receipt email clarified; deployment pending.
 - Workshop: mobile vibe coding.
 
 ## Key Paths
