@@ -154,6 +154,9 @@ export async function sendPaymentConfirmationEmail(input: {
 }) {
   const { user, transporter } = createMailTransporter();
   const workshop = workshops[input.workshop];
+  const eventDetails = input.workshop === "vibecoding"
+    ? "Мастер-класс пройдет 15 августа в Технопарке, конференц-зал Django, с 9:30 до 11:30."
+    : null;
 
   await transporter.sendMail({
     from: `Мастерская <${user}>`,
@@ -164,6 +167,7 @@ export async function sendPaymentConfirmationEmail(input: {
       "",
       "Мы получили оплату. Ваше место на мастер-классе закреплено.",
       `Мастер-класс: «${workshop.title}».`,
+      ...(eventDetails ? [eventDetails] : []),
       "",
       "Личная инструкция по подготовке:",
       input.guideUrl,
@@ -176,6 +180,7 @@ export async function sendPaymentConfirmationEmail(input: {
         <h2>Оплата получена ✅</h2>
         <p>Здравствуйте, ${escapeHtml(input.name)}!</p>
         <p>Ваше место на мастер-классе <strong>«${escapeHtml(workshop.title)}»</strong> закреплено.</p>
+        ${eventDetails ? `<p><strong>${escapeHtml(eventDetails)}</strong></p>` : ""}
         <p>Откройте личную инструкцию и подготовьтесь к мастер-классу:</p>
         <p><a href="${escapeHtml(input.guideUrl)}" style="display:inline-block;padding:12px 18px;border-radius:10px;background:#c9ff27;color:#111;text-decoration:none;font-weight:700">Открыть инструкцию</a></p>
         <p>Отмеченный прогресс сохраняется автоматически.</p>

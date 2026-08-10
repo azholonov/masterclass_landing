@@ -216,3 +216,8 @@
 ## Phase 38 — Receipt Email Clarification
 - [x] Explain that Telegram-bot disruptions require receipt upload through the personal link.
 - [ ] Deploy and verify the updated email in production.
+
+## Phase 39 — Payment Confirmation Event Details
+- [x] Add the 15 August venue and session time to the Russian workshop payment-confirmation email.
+- [x] Validate the production build.
+- [ ] Deploy and verify the updated payment-confirmation email in production.
