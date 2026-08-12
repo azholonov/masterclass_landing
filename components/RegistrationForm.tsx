@@ -3,7 +3,7 @@
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { ArrowUpRight, CheckCircle2, LoaderCircle, ShieldCheck, X } from "lucide-react";
 import Script from "next/script";
-import { workshops, type WorkshopId } from "@/lib/workshops";
+import type { WorkshopId } from "@/lib/workshops";
 
 declare global {
   interface Window {
@@ -152,11 +152,6 @@ export function RegistrationForm({ availability }: RegistrationFormProps) {
           onReady={() => setTurnstileReady(true)}
         />
       )}
-
-      <div className="form-price">
-        <span>Мастер-класс</span>
-        <strong>{workshops[selectedWorkshop].price}</strong>
-      </div>
 
       <fieldset>
         <legend>Выберите язык</legend>

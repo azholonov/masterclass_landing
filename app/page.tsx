@@ -3,7 +3,6 @@ import {
   ArrowDownRight,
   ArrowRight,
   ArrowUpRight,
-  BadgeDollarSign,
   Check,
   Clock3,
   Code2,
@@ -38,7 +37,6 @@ const workshopSessions = [
     image: "/art/vibecoding-robot.png",
     alt: "Робот санарип өсүмдүктүн жанында тиркеме программалап жатат",
     tone: "lime",
-    priceLabel: "Катышуу баасы",
   },
   {
     id: "vibecoding" as const,
@@ -54,7 +52,6 @@ const workshopSessions = [
     image: "/art/vibecoding-robot.png",
     alt: "Робот программирует приложение рядом с цифровым растением",
     tone: "violet",
-    priceLabel: "Стоимость участия",
   },
 ];
 
@@ -97,11 +94,11 @@ const productStory = [
   },
   {
     number: "05",
-    label: "За что платите",
-    title: "Не за лекцию. За короткий путь к первому результату",
+    label: "Почему это работает",
+    title: "Не просто лекция. Короткий путь к первому результату",
     description:
       "Вместо недель хаотичных видео — два часа практики, помощь на каждом сложном шаге и готовый результат к концу встречи.",
-    icon: BadgeDollarSign,
+    icon: Sparkles,
     tone: "cyan",
   },
 ];
@@ -216,10 +213,6 @@ export default async function Home() {
                   <p className="workshop-language">{workshop.language}</p>
                   <h3>{workshop.title}</h3>
                   <p className="card-subtitle">{workshop.subtitle}</p>
-                  <div className="workshop-price">
-                    <span>{workshop.priceLabel}</span>
-                    <strong>{workshopDetails[workshop.id].price}</strong>
-                  </div>
                   <p className="card-description">{workshop.description}</p>
                   <ul>
                     {workshop.features.map((feature) => <li key={feature}><Check size={15} />{feature}</li>)}
@@ -284,7 +277,7 @@ export default async function Home() {
             <div className="prep-note">
               <div className="prep-note-icon"><Wrench size={21} /></div>
               <div>
-                <span>Подготовка входит в стоимость</span>
+                <span>Подготовка перед мастер-классом</span>
                 <h3>Настройтесь сами или приходите на час раньше</h3>
                 <p>Для участия нужны личный ноутбук и активная платная подписка на один AI-инструмент — ChatGPT или Claude. После регистрации пришлём пошаговую инструкцию. Если удобнее подготовиться вместе, эксперт поможет установить и настроить всё необходимое за час до начала.</p>
                 <a className="prep-note-link" href="/guide">Открыть инструкцию <ArrowRight size={16} /></a>
@@ -339,7 +332,6 @@ export default async function Home() {
           <div className="registration-copy">
             <div className="registration-tag"><UsersRound size={15} /> Текущий набор закрыт · доступен waitlist</div>
             <h2>ВСТАНЬ<br /><span>В WAITLIST.</span></h2>
-            <div className="registration-price"><strong>{workshopDetails.vibecoding.price}</strong><span>за участие</span></div>
             <p>В текущей группе уже 5 участников. Оставь контакт — сообщим первым, когда откроется следующий набор.</p>
             <a href="mailto:soloapps.dev@gmail.com">Есть вопрос? Напиши нам <ArrowRight size={17} /></a>
           </div>

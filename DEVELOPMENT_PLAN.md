@@ -221,3 +221,9 @@
 - [x] Add the 15 August venue and session time to the Russian workshop payment-confirmation email.
 - [x] Validate the production build.
 - [ ] Deploy and verify the updated payment-confirmation email in production.
+
+## Phase 40 — Hide Public Pricing
+- [x] Remove workshop prices from the public landing page and registration form.
+- [x] Replace public pricing language with neutral workshop-value messaging.
+- [x] Validate the production build.
+- [ ] Deploy the public pricing update.

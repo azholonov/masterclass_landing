@@ -5,7 +5,6 @@ export const workshops = {
     format: "кыргыз тилинде, Бишкекте офлайн",
     capacity: 12,
     registrationOpen: false,
-    price: "5 000 сом",
   },
   vibecoding: {
     title: "Вайбкодим мобильное приложение",
@@ -13,7 +12,6 @@ export const workshops = {
     format: "на русском языке, офлайн в Бишкеке",
     capacity: 12,
     registrationOpen: false,
-    price: "5 000 сом",
   },
   "token-economics": {
     title: "Экономика токенов",
