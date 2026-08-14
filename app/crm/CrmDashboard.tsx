@@ -18,7 +18,7 @@ const labels = {
 } as const;
 
 type Filter = "all" | "unpaid" | "instructions" | "contact" | "confirmed";
-type PreparedEmailAction = "payment_request" | "receipt_upload" | "payment_confirmation";
+type PreparedEmailAction = "payment_request" | "receipt_upload" | "payment_confirmation" | "workshop_reminder";
 type PaymentReceipt = {
   id: string;
   createdAt: string;
@@ -77,6 +77,7 @@ function ParticipantCard({ participant }: { participant: Participant }) {
   const [receiptsError, setReceiptsError] = useState("");
   const isDirty = JSON.stringify(draft) !== JSON.stringify(saved);
   const isMobileWorkshop = draft.workshop === "vibecoding" || draft.workshop === "vibecoding-kg";
+  const isReminderWorkshop = draft.workshop === "vibecoding";
 
   function update<K extends keyof Participant>(key: K, value: Participant[K]) {
     setDraft((current) => ({ ...current, [key]: value }));
@@ -238,18 +239,21 @@ function ParticipantCard({ participant }: { participant: Participant }) {
       ? `Отправить ${draft.name} письмо с реквизитами MBANK и ссылкой на Telegram-бот?`
       : action === "receipt_upload"
         ? `Отправить ${draft.name} одноразовую ссылку для загрузки чека?`
-        : `Оплата от ${draft.name} проверена? Письмо закрепит место, отметит 5 000 сом как оплаченные и выдаст доступ к guide.`;
+        : action === "payment_confirmation"
+          ? `Оплата от ${draft.name} проверена? Письмо закрепит место, отметит 5 000 сом как оплаченные и выдаст доступ к guide.`
+          : `Отправить ${draft.name} напоминание о завтрашней встрече с местом, временем и новой личной ссылкой на инструкцию?`;
     if (!window.confirm(confirmation)) return;
 
     setPreparedEmailState({ action, status: "sending", message: "" });
     const isPaymentConfirmation = action === "payment_confirmation";
+    const usesGuideAccess = isPaymentConfirmation || action === "workshop_reminder";
     const response = await fetch(
-      `/api/crm/participants/${participant.id}/${isPaymentConfirmation ? "guide-access" : "email"}`,
+      `/api/crm/participants/${participant.id}/${usesGuideAccess ? "guide-access" : "email"}`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(isPaymentConfirmation
-          ? { emailType: "payment_confirmation" }
+        body: JSON.stringify(usesGuideAccess
+          ? { emailType: action }
           : { template: action }),
       },
     );
@@ -268,7 +272,7 @@ function ParticipantCard({ participant }: { participant: Participant }) {
     }
 
     const sentAt = result.sentAt ?? new Date().toISOString();
-    if (!isPaymentConfirmation) {
+    if (!usesGuideAccess) {
       const next = {
         ...draft,
         contact_status: draft.contact_status === "not_contacted" ? "contacted" as const : draft.contact_status,
@@ -281,6 +285,32 @@ function ParticipantCard({ participant }: { participant: Participant }) {
         action,
         status: "sent",
         message: action === "payment_request" ? "Запрос оплаты отправлен." : "Ссылка для загрузки чека отправлена.",
+      });
+      return;
+    }
+
+    if (action === "workshop_reminder") {
+      const next = {
+        ...draft,
+        instructions_status: "sent" as const,
+        instructions_sent_at: draft.instructions_sent_at ?? sentAt,
+        contact_status: draft.contact_status === "not_contacted" ? "contacted" as const : draft.contact_status,
+        last_contacted_at: sentAt,
+        updated_at: sentAt,
+      };
+      setDraft(next);
+      setSaved(next);
+      if (result.guideUrl) {
+        setGuideUrl(result.guideUrl);
+        setGuideMessage(result.emailed ? "Новая личная ссылка отправлена на email." : result.message ?? "Скопируйте ссылку вручную.");
+        setGuideState(result.emailed ? "sent" : "partial");
+      }
+      setPreparedEmailState({
+        action,
+        status: result.emailed ? "sent" : "partial",
+        message: result.emailed
+          ? "Напоминание о встрече отправлено."
+          : result.message ?? "Ссылка создана, но письмо не отправилось.",
       });
       return;
     }
@@ -375,7 +405,7 @@ function ParticipantCard({ participant }: { participant: Participant }) {
         <div className={styles.preparedEmailsHeading}>
           <div>
             <strong>Готовые письма</strong>
-            <span>Запрос оплаты → ссылка на чек → подтверждение после проверки</span>
+            <span>Оплата, чек, подтверждение и напоминание перед встречей</span>
           </div>
           {preparedEmailState.message ? (
             <p className={preparedEmailState.status === "error" ? styles.saveError : ""}>
@@ -414,6 +444,16 @@ function ParticipantCard({ participant }: { participant: Participant }) {
               ? <LoaderCircle className={styles.spin} size={16} />
               : <UserCheck size={16} />}
             3. Подтвердить оплату и место
+          </button>
+          <button
+            type="button"
+            onClick={() => sendPreparedEmail("workshop_reminder")}
+            disabled={preparedEmailState.status === "sending" || draft.status !== "confirmed" || !isReminderWorkshop}
+          >
+            {preparedEmailState.action === "workshop_reminder" && preparedEmailState.status === "sending"
+              ? <LoaderCircle className={styles.spin} size={16} />
+              : <CalendarClock size={16} />}
+            4. Напомнить о встрече
           </button>
         </div>
         <div className={styles.receiptsPanel}>

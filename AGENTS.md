@@ -2,7 +2,7 @@
 
 ## Summary
 - Russian-language landing page for workshop registration.
-- Current phase: Phase 40 — public pricing hidden; deployment pending.
+- Current phase: Phase 41 — workshop reminder email; deployment pending.
 - Workshop: mobile vibe coding.
 
 ## Key Paths

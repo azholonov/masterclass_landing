@@ -227,3 +227,10 @@
 - [x] Replace public pricing language with neutral workshop-value messaging.
 - [x] Validate the production build.
 - [ ] Deploy the public pricing update.
+
+## Phase 41 — Workshop Reminder Email
+- [x] Add a prepared reminder email for the 15 August Russian workshop.
+- [x] Include the venue, session time, and a refreshed personal guide link.
+- [x] Add the reminder action to each eligible participant card in the CRM.
+- [x] Validate the production build.
+- [ ] Deploy and verify the reminder email in production.

@@ -1,7 +1,7 @@
 import { createHash, randomBytes } from "crypto";
 import { NextRequest, NextResponse } from "next/server";
 import { CRM_SESSION_COOKIE, verifyCrmSession } from "@/lib/crm-auth";
-import { sendGuideAccessEmail, sendPaymentConfirmationEmail } from "@/lib/email";
+import { sendGuideAccessEmail, sendPaymentConfirmationEmail, sendWorkshopReminderEmail } from "@/lib/email";
 import { activeGuideStatuses, getGuideAccessUrl } from "@/lib/guide-auth";
 import { readJsonBody } from "@/lib/request-security";
 import { createSupabaseAdmin } from "@/lib/supabase";
@@ -23,10 +23,11 @@ export async function POST(request: NextRequest, context: { params: Promise<{ id
   }
 
   const body = await readJsonBody<{ emailType?: unknown }>(request, 1_024);
-  if (!body.ok || !["guide_access", "payment_confirmation"].includes(String(body.value.emailType))) {
+  if (!body.ok || !["guide_access", "payment_confirmation", "workshop_reminder"].includes(String(body.value.emailType))) {
     return NextResponse.json({ message: "Некорректный тип письма." }, { status: 400 });
   }
   const isPaymentConfirmation = body.value.emailType === "payment_confirmation";
+  const isWorkshopReminder = body.value.emailType === "workshop_reminder";
 
   const supabase = createSupabaseAdmin();
   if (!supabase) {
@@ -55,6 +56,12 @@ export async function POST(request: NextRequest, context: { params: Promise<{ id
   if (isPaymentConfirmation && !isMobileWorkshop) {
     return NextResponse.json({ message: "Подтверждение оплаты настроено для мастер-класса по мобильному вайбкодингу." }, { status: 409 });
   }
+  if (isWorkshopReminder && participant.workshop !== "vibecoding") {
+    return NextResponse.json({ message: "Напоминание настроено для русскоязычного мастер-класса 15 августа." }, { status: 409 });
+  }
+  if (isWorkshopReminder && participant.status !== "confirmed") {
+    return NextResponse.json({ message: "Напоминание можно отправить только подтверждённому участнику." }, { status: 409 });
+  }
 
   const token = randomBytes(32).toString("base64url");
   const tokenHash = createHash("sha256").update(token).digest("hex");
@@ -74,6 +81,8 @@ export async function POST(request: NextRequest, context: { params: Promise<{ id
         payment_status: "paid",
         payment_amount: paymentAmount,
         paid_at: now,
+      } : {}),
+      ...(isPaymentConfirmation || isWorkshopReminder ? {
         contact_status: participant.contact_status === "not_contacted" ? "contacted" : participant.contact_status,
         last_contacted_at: now,
       } : {}),
@@ -109,6 +118,8 @@ export async function POST(request: NextRequest, context: { params: Promise<{ id
     };
     if (isPaymentConfirmation) {
       await sendPaymentConfirmationEmail(emailInput);
+    } else if (isWorkshopReminder) {
+      await sendWorkshopReminderEmail(emailInput);
     } else {
       await sendGuideAccessEmail(emailInput);
     }

@@ -191,6 +191,52 @@ export async function sendPaymentConfirmationEmail(input: {
   });
 }
 
+export async function sendWorkshopReminderEmail(input: {
+  name: string;
+  email: string;
+  workshop: WorkshopId;
+  guideUrl: string;
+}) {
+  const { user, transporter } = createMailTransporter();
+  const workshop = workshops[input.workshop];
+
+  await transporter.sendMail({
+    from: `Мастерская <${user}>`,
+    to: input.email,
+    subject: "Уже завтра встречаемся на мастер-классе",
+    text: [
+      `Здравствуйте, ${input.name}!`,
+      "",
+      `Уже завтра встречаемся на мастер-классе «${workshop.title}».`,
+      "Дата: 15 августа 2026.",
+      "Время: с 9:30 до 11:30.",
+      "Место: Технопарк, конференц-зал Django.",
+      "",
+      "Перед встречей проверьте, что всё готово по личной инструкции:",
+      input.guideUrl,
+      "",
+      "Не пересылайте эту ссылку другим людям: она открывает ваш личный прогресс.",
+      "До завтра!",
+    ].join("\n"),
+    html: `
+      <div style="font-family:Arial,sans-serif;line-height:1.6;color:#171717;max-width:600px">
+        <h2>Уже завтра встречаемся! 👋</h2>
+        <p>Здравствуйте, ${escapeHtml(input.name)}!</p>
+        <p>Напоминаем о мастер-классе <strong>«${escapeHtml(workshop.title)}»</strong>.</p>
+        <div style="padding:16px 18px;border-radius:12px;background:#f3f5ef">
+          <strong>Дата:</strong> 15 августа 2026<br>
+          <strong>Время:</strong> с 9:30 до 11:30<br>
+          <strong>Место:</strong> Технопарк, конференц-зал Django
+        </div>
+        <p>Перед встречей проверьте, что всё готово по личной инструкции:</p>
+        <p><a href="${escapeHtml(input.guideUrl)}" style="display:inline-block;padding:12px 18px;border-radius:10px;background:#c9ff27;color:#111;text-decoration:none;font-weight:700">Открыть инструкцию</a></p>
+        <p style="font-size:12px;color:#777">Не пересылайте эту ссылку другим людям: она открывает ваш личный прогресс. Новая ссылка отключает предыдущую.</p>
+        <p>До завтра!</p>
+      </div>
+    `,
+  });
+}
+
 export async function sendReceiptUploadEmail(input: {
   name: string;
   email: string;
